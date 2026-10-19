@@ -210,6 +210,49 @@ a {
   mix-blend-mode: luminosity;
 }
 
+/* 進場動畫：信封開場開始淡出時（或沒有信封時）由 src/envelope.ts 在 <html> 加上 .hero-in 觸發。
+   沒有 JS（.has-js 不存在）就直接顯示，不會卡在隱藏狀態 */
+.has-js .hero__lettering,
+.has-js .hero-date__art {
+  opacity: 0;
+}
+
+.hero-in .hero__lettering {
+  animation: hero-fade-up 2.2s var(--ease-soft) 0.3s both;
+}
+
+.hero-in .hero-date__art {
+  animation: hero-bloom 2.4s var(--ease-soft) 1.3s both;
+}
+
+@keyframes hero-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 日期（雙線＋日期字）：用橢圓遮罩從中心往四周放大，邊緣是柔的，同時淡入 */
+@keyframes hero-bloom {
+  from {
+    opacity: 0;
+    -webkit-mask-size: 0% 0%;
+    mask-size: 0% 0%;
+  }
+  35% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    -webkit-mask-size: 300% 600%;
+    mask-size: 300% 600%;
+  }
+}
+
 /* 燙金日期（Figma「資產 1 1」，551.667 × 100） */
 .hero-date {
   container-type: inline-size;
@@ -221,6 +264,14 @@ a {
   aspect-ratio: 551.667 / 100;
   overflow: hidden;
   filter: url(#gold-foil);
+  -webkit-mask-image: radial-gradient(closest-side, #000 55%, transparent 100%);
+  mask-image: radial-gradient(closest-side, #000 55%, transparent 100%);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: 300% 600%;
+  mask-size: 300% 600%;
 }
 
 .hero-date__text {
@@ -888,31 +939,22 @@ input:invalid.touched {
 }
 
 /* ==========================================================================
-   #envelope-intro — 信封開場（每次進站都出現，點火漆章或信封才打開）
-   疊層（後→前）：打開的封蓋／打開的本體（內襯）→ 信紙 → 前袋 → 封好的信封 → 封好的封蓋 → 火漆章
-   封好的照片比例 1.35、打開的本體 1.56，封好那張垂直壓 13% 對齊打開那張（2026-10-19 待 Haley 確認）
-   時間軸由 src/envelope.ts 切換 class：is-ready → is-pressing → is-opening → is-letter → is-leaving
+   #envelope-intro — 信封開場（每次進站都出現，點一下才打開）
+   疊層（後→前）：油畫花卉底圖(scene) → Save THE Date 字 → 封好的信封(closed) → 封蓋＋火漆章(lid) → 提示文字
+   信封照片用 cover 方式放大蓋滿整個視窗（比視窗再大 4%，讓信封圓角落在畫面外）；封好那張垂直壓 13% 對齊打開版比例
+   時間軸由 src/envelope.ts 切換 class：is-ready → is-pressing → is-opening → is-leaving
    ========================================================================== */
 .intro {
   display: none;
 }
 
 .has-js .intro {
+  display: block;
   position: fixed;
   inset: 0;
   z-index: 100;
-  display: grid;
-  place-items: center;
-  padding-top: 18vh;
+  overflow: hidden;
   background-color: var(--wine-deep);
-  background-image:
-    radial-gradient(ellipse at 50% 55%, rgba(15, 0, 0, 0) 30%, rgba(15, 0, 0, 0.55) 100%),
-    url('/art/paper-wine.jpg');
-  background-image:
-    radial-gradient(ellipse at 50% 55%, rgba(15, 0, 0, 0) 30%, rgba(15, 0, 0, 0.55) 100%),
-    image-set(url('/art/paper-wine.webp') type('image/webp'), url('/art/paper-wine.jpg') type('image/jpeg'));
-  background-size: cover;
-  background-position: center;
   transition:
     opacity 0.9s var(--ease-soft),
     visibility 0s linear 0.9s;
@@ -923,121 +965,150 @@ input:invalid.touched {
   overflow: hidden;
 }
 
+/* 油畫花卉：信封蓋著時看不到，點下去後先在信封後面準備好 */
+.intro__scene {
+  position: absolute;
+  inset: 0;
+  background-color: var(--wine-deep);
+  background-image:
+    linear-gradient(rgba(20, 0, 4, 0.38), rgba(20, 0, 4, 0.38)),
+    url('/art/baroque-floral.jpg');
+  background-image:
+    linear-gradient(rgba(20, 0, 4, 0.38), rgba(20, 0, 4, 0.38)),
+    image-set(url('/art/baroque-floral.webp') type('image/webp'), url('/art/baroque-floral.jpg') type('image/jpeg'));
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+}
+
+.intro.is-pressing .intro__scene,
+.intro.is-opening .intro__scene {
+  opacity: 1;
+}
+
+/* Save THE Date：Save、Date 手寫風斜體，THE 大寫拉開字距，依序浮現 */
+.intro__stdate {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(60px, 13vmin, 132px);
+  line-height: 1;
+  color: var(--linen);
+  text-shadow:
+    0 4px 14px rgba(0, 0, 0, 0.55),
+    0 1px 2px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+.intro__stdate > span {
+  display: block;
+  opacity: 0;
+  transition: opacity 0.7s ease-out;
+}
+
+.intro__stdate-save,
+.intro__stdate-date {
+  font-style: italic;
+  font-weight: 400;
+}
+
+.intro__stdate-the {
+  margin: 0.08em 0 0.1em;
+  font-size: 0.34em;
+  font-weight: 400;
+  letter-spacing: 0.7em;
+  text-indent: 0.7em;
+}
+
+/* 依序淡入：Save → THE → Date，間隔 0.55 秒（延遲是從按下火漆章後算起，封蓋翻起約 1.3 秒後才開始） */
+.intro__stdate .intro__stdate-save {
+  transition-delay: 1.3s;
+}
+
+.intro__stdate .intro__stdate-the {
+  transition-delay: 1.85s;
+}
+
+.intro__stdate .intro__stdate-date {
+  transition-delay: 2.4s;
+}
+
+.intro.is-opening .intro__stdate > span {
+  opacity: 1;
+}
+
+/* 信封：中心對齊視窗，寬度取「蓋滿視窗」所需的最小值再放大 4% */
 .intro__stage {
-  --w: min(560px, 84vw);
-  position: relative;
+  --w: max(104vw, 104vh * 1.5617);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
   width: var(--w);
   aspect-ratio: 1290 / 826;
+  translate: -50% -50%;
   cursor: pointer;
   opacity: 0;
-  transform: translateY(24px) scale(0.97);
-  transition:
-    opacity 0.9s var(--ease-soft),
-    transform 0.9s var(--ease-soft);
+  transition: opacity 0.9s var(--ease-soft);
 }
 
 .intro.is-ready .intro__stage {
   opacity: 1;
-  transform: none;
 }
 
-.intro__stage > img,
-.intro__letter {
-  position: absolute;
-  display: block;
-  max-width: none;
-}
-
-/* 打開的本體＝內襯底；前袋＝同一張圖只留下方袋子（挖掉內襯梯形），信紙夾在兩者之間 */
-.intro__open-body,
-.intro__pocket {
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  /* 點開前先藏起來，避免從封好那張的圓角邊緣透出內襯 */
-  visibility: hidden;
-}
-
-.intro.is-opening .intro__open-body,
-.intro.is-opening .intro__pocket {
-  visibility: visible;
-}
-
-.intro__open-body {
-  filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.45));
-}
-
-.intro__pocket {
-  z-index: 3;
-  clip-path: polygon(0 0, 2.6% 0, 29.3% 38.1%, 68.9% 38.1%, 96.7% 0, 100% 0, 100% 100%, 0 100%);
-}
-
-/* 打開的封蓋：接在本體上緣，先倒在 -90°（側面朝觀者），開信時翻到 0° 立起來 */
-.intro__open-flap {
-  left: 0;
-  bottom: 100%;
-  width: 100%;
-  height: auto;
-  z-index: 1;
-  transform-origin: 50% 100%;
-  transform: perspective(1400px) rotateX(-90deg);
-  visibility: hidden;
-}
-
-/* 封好的整封與封蓋：拉伸成本體比例（垂直壓 13%） */
 .intro__closed,
-.intro__closed-flap {
+.intro__lid,
+.intro__lid-img {
+  position: absolute;
   inset: 0;
+  display: block;
   width: 100%;
   height: 100%;
+  max-width: none;
   object-fit: fill;
 }
 
 .intro__closed {
-  z-index: 4;
   filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.45));
-  transition: opacity 0.3s linear;
 }
 
-.intro__closed-flap {
-  z-index: 5;
-  clip-path: polygon(0 0, 100% 0, 53.6% 61%, 51.5% 63.6%, 49.2% 64.4%, 46.9% 63.6%, 45.2% 61%);
+/* 打開時：整封信封把封蓋那塊（V 形）挖掉——封蓋翻起後底下露出油畫，其餘信封之後再淡出 */
+.intro.is-opening .intro__closed {
+  clip-path: polygon(0 0, 0 100%, 100% 100%, 100% 0, 53.6% 61%, 51.5% 63.6%, 49.2% 64.4%, 46.9% 63.6%, 45.2% 61%);
+  opacity: 0;
+  transition: opacity 0.9s ease-in 1s;
+}
+
+/* 封蓋：封好那張的 V 形部分，連同火漆章一起繞上緣翻起 */
+.intro__lid {
   transform-origin: 50% 0;
-  transform: perspective(1400px) rotateX(0deg);
+  transform: perspective(2200px) rotateX(0deg);
 }
 
-/* 信紙：米白卡片＋壓印 Loved to love，藏在前袋後面 */
-.intro__letter {
-  left: 6%;
-  top: 7%;
-  width: 88%;
-  height: 86%;
-  z-index: 2;
-  display: grid;
-  place-items: center;
-  padding: 8%;
-  background: var(--cream);
-  border-radius: 4px;
-  box-shadow:
-    inset 0 0 0 6px var(--cream),
-    inset 0 0 0 7px var(--gold-30),
-    0 6px 18px rgba(0, 0, 0, 0.35);
-  visibility: hidden;
+.intro__lid-img {
+  clip-path: polygon(0 0, 100% 0, 53.6% 61%, 51.5% 63.6%, 49.2% 64.4%, 46.9% 63.6%, 45.2% 61%);
 }
 
-.intro__letter img {
-  width: 100%;
-  height: auto;
+.intro.is-opening .intro__lid {
+  transform: perspective(2200px) rotateX(92deg);
+  opacity: 0;
+  transition:
+    transform 1.25s cubic-bezier(0.55, 0, 0.35, 1) 0.1s,
+    opacity 0.3s linear 1s;
 }
 
-/* 火漆章：在封蓋尖端 */
+/* 火漆章：在封蓋尖端。大小跟視窗走（不跟信封照片放大），不放光暈、不畫邊框 */
 .intro__seal {
   position: absolute;
   left: 49.2%;
   top: 58%;
-  z-index: 6;
-  width: 21%;
+  width: clamp(150px, 32vmin, 300px);
   aspect-ratio: 172 / 175;
   padding: 0;
   border: 0;
@@ -1046,9 +1117,11 @@ input:invalid.touched {
   cursor: pointer;
   transform: translate(-50%, -50%);
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45));
+  transition: transform 0.16s ease-out;
 }
 
 .intro__seal img {
+  display: block;
   width: 100%;
   height: 100%;
 }
@@ -1063,86 +1136,14 @@ input:invalid.touched {
   transform: translate(-50%, -50%) scale(1.06);
 }
 
-.intro__hint {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  margin: clamp(20px, 4vh, 36px) 0 0;
-  text-align: center;
-  font-weight: 300;
-  font-size: clamp(14px, 1.4vw, 17px);
-  letter-spacing: 0.35em;
-  text-indent: 0.35em;
-  color: var(--gold);
-  filter: url(#gold-foil);
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.8s var(--ease-soft) 0.6s;
-}
-
-.intro.is-ready .intro__hint {
-  opacity: 1;
-}
-
-.intro.is-pressing .intro__hint,
-.intro.is-opening .intro__hint {
-  opacity: 0;
-  transition: opacity 0.3s ease-out;
-}
-
-/* 1. 按下火漆章：壓下去 */
 .intro.is-pressing .intro__seal {
   transform: translate(-50%, -50%) scale(0.9);
-  transition: transform 0.16s ease-out;
 }
 
-/* 2. 火漆章脫落、封好的信封淡出、封蓋往觀者翻起 */
-.intro.is-opening .intro__seal {
-  opacity: 0;
-  transform: translate(-50%, -30%) scale(1.12) rotate(-10deg);
-  transition:
-    opacity 0.35s ease-in,
-    transform 0.35s ease-in;
-}
-
-.intro.is-opening .intro__closed {
-  opacity: 0;
-  transition-delay: 0.25s;
-}
-
-.intro.is-opening .intro__closed-flap {
-  transform: perspective(1400px) rotateX(90deg);
-  transition: transform 0.45s cubic-bezier(0.55, 0, 0.9, 0.45) 0.3s;
-}
-
-.intro.is-opening .intro__open-flap {
-  visibility: visible;
-  transform: perspective(1400px) rotateX(0deg);
-  transition:
-    transform 0.5s cubic-bezier(0.1, 0.55, 0.45, 1) 0.75s,
-    visibility 0s linear 0.75s;
-}
-
-/* 3. 信紙從袋子裡往上抽出 */
-.intro.is-opening .intro__letter {
-  visibility: visible;
-}
-
-.intro.is-letter .intro__letter {
-  transform: translateY(-62%);
-  transition: transform 1s cubic-bezier(0.45, 0, 0.2, 1);
-}
-
-/* 4. 整個開場淡出，露出網頁 */
+/* 整個開場淡出，露出網頁 */
 .intro.is-leaving {
   opacity: 0;
   visibility: hidden;
-}
-
-.intro.is-leaving .intro__stage {
-  transform: scale(1.06);
-  transition: transform 0.9s var(--ease-soft);
 }
 
 /* 捲動進場動效：由 main.ts 的 IntersectionObserver 加上 .reveal--in 觸發 */
@@ -1160,10 +1161,11 @@ input:invalid.touched {
 }
 
 /* 尊重使用者的減少動態偏好設定。
-   例外：信封開場（#envelope-intro）是整個網站的主視覺體驗，Haley 2026-10-19 決定不論對方手機怎麼設定都要播動畫
+   例外：信封開場（#envelope-intro）與 Save the Date 的 Loved to love／日期進場動畫是主視覺體驗，
+   Haley 2026-10-19 決定不論對方手機怎麼設定都要播動畫
    （手機開了「減少動態效果」或省電模式時，之前會整段被跳過） */
 @media (prefers-reduced-motion: reduce) {
-  *:not(#envelope-intro, #envelope-intro *) {
+  *:not(#envelope-intro, #envelope-intro *, .hero__lettering, .hero-date__art) {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

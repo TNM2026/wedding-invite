@@ -7,12 +7,12 @@
     <meta name="description" content="蔡旻欣 & 邜航宣 婚禮邀請函，誠摯邀請您出席並填寫出席意願表單。" />
     <title>蔡旻欣 & 邜航宣 婚禮邀請函</title>
 
-    <!-- Google Fonts：Noto Serif TC（中文內文）＋ Lora（首頁日期）＋ Cormorant Garamond（婚禮資訊時間）
+    <!-- Google Fonts：Noto Serif TC（中文內文）＋ Lora（首頁日期）＋ Cormorant Garamond（婚禮資訊時間、信封開場 Save the Date）
          源樣明體（新人名字、誠摯邀請、星期六）不在 Google Fonts，自帶精簡字型檔，見 style.css 的 @font-face -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Lora:wght@700&family=Noto+Serif+TC:wght@300;400;500;600;700;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400;1,500&family=Lora:wght@700&family=Noto+Serif+TC:wght@300;400;500;600;700;900&display=swap"
       rel="stylesheet"
     />
     <!-- 有 JS 才顯示信封開場並鎖住捲動（JS 失效時直接看到網頁，不會被信封擋住） -->
@@ -40,22 +40,24 @@
         </feMerge>
       </filter>
     </svg>
-    <!-- ===== 信封開場：每次進站都要點火漆章才開（Haley 2026-10-19 決定，不記住、不放跳過鈕） =====
-         素材來自 Figma 3:30（墨綠信封：打開 3:31／封好 3:18，火漆章 3:29），去背後拆成封好整封、打開的本體、打開的封蓋 -->
+    <!-- ===== 信封開場：每次進站都要點一下才打開（Haley 2026-10-19 決定，不記住、不放跳過鈕） =====
+         滿版墨綠信封（Figma 3:30 的照片，去背後用 cover 方式蓋滿整個畫面）→ 點開後封蓋連著火漆章翻起，
+         露出油畫花卉底圖，Save THE Date 依序浮現，停幾秒後淡入首頁。參考 Pinterest 影片的開信流程 -->
     <div id="envelope-intro" class="intro" role="dialog" aria-modal="true" aria-label="婚禮邀請函信封">
+      <div class="intro__scene" aria-hidden="true"></div>
+      <p class="intro__stdate" aria-hidden="true">
+        <span class="intro__stdate-save">Save</span>
+        <span class="intro__stdate-the">THE</span>
+        <span class="intro__stdate-date">Date</span>
+      </p>
       <div class="intro__stage">
-        <img class="intro__open-flap" src="/art/envelope/envelope-open-flap.webp" alt="" />
-        <img class="intro__open-body" src="/art/envelope/envelope-open-body.webp" alt="" />
-        <div class="intro__letter" aria-hidden="true">
-          <img src="/art/loved-to-love-emboss.svg" alt="" />
-        </div>
-        <img class="intro__pocket" src="/art/envelope/envelope-open-body.webp" alt="" />
         <img class="intro__closed" src="/art/envelope/envelope-closed.webp" alt="" />
-        <img class="intro__closed-flap" src="/art/envelope/envelope-closed.webp" alt="" />
-        <button type="button" class="intro__seal" aria-label="點擊火漆章，打開邀請函">
-          <img src="/art/envelope/wax-seal.webp" alt="" />
-        </button>
-        <p class="intro__hint" aria-hidden="true">請開啟您的邀請函</p>
+        <div class="intro__lid">
+          <img class="intro__lid-img" src="/art/envelope/envelope-closed.webp" alt="" />
+          <button type="button" class="intro__seal" aria-label="點擊火漆章，打開邀請函">
+            <img src="/art/envelope/wax-seal.webp" alt="" />
+          </button>
+        </div>
       </div>
     </div>
 
