@@ -223,13 +223,21 @@ function initRsvpForm(): void {
   }
 
   async function submitPayload(payload: Record<string, string>): Promise<void> {
-    const endpoint = import.meta.env.VITE_RSVP_ENDPOINT;
+    // 去掉前後的 U+FEFF（BOM）與空白換行，避免 Secret 貼上時夾帶不可見字元，讓 fetch 把網址當成相對路徑
+    // 不用 trim()：build 時 endpoint 是常數，minifier 會預先折疊 trim() 且不認 U+FEFF，結果 BOM 照樣留在 bundle 裡
+    const endpoint = (import.meta.env.VITE_RSVP_ENDPOINT ?? '').replace(/^[\s\uFEFF]+|[\s\uFEFF]+$/g, '');
 
-    // 開發模式：沒設定 endpoint 時，印出 payload 並模擬 800ms 後成功，方便本機測試不用真的部署 Apps Script
     if (!endpoint) {
-      console.info('[rsvp] VITE_RSVP_ENDPOINT 未設定，模擬送出（本機開發模式）：', payload);
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      return;
+      // 開發模式：沒設定 endpoint 時，印出 payload 並模擬 800ms 後成功，方便本機測試不用真的部署 Apps Script
+      if (import.meta.env.DEV) {
+        console.info('[rsvp] VITE_RSVP_ENDPOINT 未設定，模擬送出（本機開發模式）：', payload);
+        await new Promise((resolve) => setTimeout(resolve, 800));
+        return;
+      }
+
+      // 正式 build：沒設定就丟錯，讓訪客看到失敗畫面，不要假裝成功而讓資料根本沒送出
+      console.error('[rsvp] VITE_RSVP_ENDPOINT 未設定，無法送出表單，請檢查部署時的 Secret');
+      throw new Error('VITE_RSVP_ENDPOINT is not set');
     }
 
     // 用 text/plain 送出 JSON，避免瀏覽器對 Apps Script 端點發出 CORS preflight
