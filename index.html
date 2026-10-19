@@ -4,96 +4,204 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="description" content="林承宇 & 陳沛瑜 婚禮邀請函，誠摯邀請您出席並填寫出席意願表單。" />
-    <title>林承宇 & 陳沛瑜 婚禮邀請函</title>
+    <meta name="description" content="蔡旻欣 & 邜航宣 婚禮邀請函，誠摯邀請您出席並填寫出席意願表單。" />
+    <title>蔡旻欣 & 邜航宣 婚禮邀請函</title>
 
-    <!-- Google Fonts：Cormorant Garamond（英文/數字裝飾字）＋ Noto Serif TC（中文內文） -->
+    <!-- Google Fonts：Noto Serif TC（中文內文）＋ Lora（首頁日期）＋ Cormorant Garamond（婚禮資訊時間）
+         源樣明體（新人名字、誠摯邀請、星期六）不在 Google Fonts，自帶精簡字型檔，見 style.css 的 @font-face -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Noto+Serif+TC:wght@300;400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Lora:wght@700&family=Noto+Serif+TC:wght@300;400;500;600;700;900&display=swap"
       rel="stylesheet"
     />
+    <!-- 有 JS 才顯示信封開場並鎖住捲動（JS 失效時直接看到網頁，不會被信封擋住） -->
+    <script>
+      document.documentElement.classList.add('has-js', 'intro-open');
+      if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    </script>
   </head>
   <body>
+    <!-- Figma「燙金」效果樣式：內陰影 #110F05 60%（1, 2, 模糊 1.9）＋外陰影 #2A0303 20%（3, 3, 模糊 1.1）
+         CSS 的 text-shadow 做不出內陰影，所以用 SVG filter，給文字與燙金日期以 filter: url(#gold-foil) 套用 -->
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true" focusable="false">
+      <filter id="gold-foil" x="-10%" y="-20%" width="130%" height="160%" color-interpolation-filters="sRGB">
+        <feOffset in="SourceAlpha" dx="3" dy="3" />
+        <feGaussianBlur stdDeviation="0.55" />
+        <feColorMatrix type="matrix" values="0 0 0 0 0.165384 0 0 0 0 0.0100185 0 0 0 0 0.0100185 0 0 0 0.2 0" result="drop" />
+        <feOffset in="SourceAlpha" dx="1" dy="2" />
+        <feGaussianBlur stdDeviation="0.95" />
+        <feComposite in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" />
+        <feColorMatrix type="matrix" values="0 0 0 0 0.0653845 0 0 0 0 0.0607447 0 0 0 0 0.0189866 0 0 0 0.6 0" result="inner" />
+        <feMerge>
+          <feMergeNode in="drop" />
+          <feMergeNode in="SourceGraphic" />
+          <feMergeNode in="inner" />
+        </feMerge>
+      </filter>
+    </svg>
+    <!-- ===== 信封開場：每次進站都要點火漆章才開（Haley 2026-10-19 決定，不記住、不放跳過鈕） =====
+         素材來自 Figma 3:30（墨綠信封：打開 3:31／封好 3:18，火漆章 3:29），去背後拆成封好整封、打開的本體、打開的封蓋 -->
+    <div id="envelope-intro" class="intro" role="dialog" aria-modal="true" aria-label="婚禮邀請函信封">
+      <div class="intro__stage">
+        <img class="intro__open-flap" src="/art/envelope/envelope-open-flap.webp" alt="" />
+        <img class="intro__open-body" src="/art/envelope/envelope-open-body.webp" alt="" />
+        <div class="intro__letter" aria-hidden="true">
+          <img src="/art/loved-to-love-emboss.svg" alt="" />
+        </div>
+        <img class="intro__pocket" src="/art/envelope/envelope-open-body.webp" alt="" />
+        <img class="intro__closed" src="/art/envelope/envelope-closed.webp" alt="" />
+        <img class="intro__closed-flap" src="/art/envelope/envelope-closed.webp" alt="" />
+        <button type="button" class="intro__seal" aria-label="點擊火漆章，打開邀請函">
+          <img src="/art/envelope/wax-seal.webp" alt="" />
+        </button>
+        <p class="intro__hint" aria-hidden="true">請開啟您的邀請函</p>
+      </div>
+    </div>
+
     <div id="app">
-      <!-- ===== Hero：深松綠 + 半圈花環包住「19」 ===== -->
+      <!-- ===== Hero：酒紅紙張＋壓印 Loved to love＋燙金日期＋經文 ===== -->
       <section id="hero" aria-label="Save the date">
-        <div class="hero__topline">
+        <div class="hero__topbar">
+          <span class="hero__ornament">
+            <span class="bleed" style="--bleed: -1.36% -4.76% -16.25% 0"><img src="/art/ornament-left.svg" alt="" /></span>
+          </span>
           <span class="hero__eyebrow">DECEMBER · 2026</span>
-          <span class="hero__cross" aria-hidden="true">
-            <svg viewBox="0 0 44 64" width="22" height="32" role="presentation">
-              <path
-                d="M22 2 V62 M6 20 H38"
-                stroke="currentColor"
-                stroke-width="2.5"
-                stroke-linecap="round"
-                fill="none"
-              />
-            </svg>
+          <span class="hero__topcross">
+            <span class="bleed" style="--bleed: -1.56% -11.82% -14.37% 0"><img src="/art/cross-top.svg" alt="" /></span>
           </span>
           <span class="hero__eyebrow">SAVE THE DATE</span>
+          <span class="hero__ornament">
+            <span class="bleed" style="--bleed: -1.36% -4.77% -16.25% 0"><img src="/art/ornament-right.svg" alt="" /></span>
+          </span>
         </div>
 
-        <div class="hero__wreath">
-          <picture>
-            <source srcset="/art/wreath-half.webp" type="image/webp" />
-            <img
-              src="/art/wreath-half.png"
-              alt=""
-              class="hero__wreath-img"
-              width="1150"
-              height="1150"
-              loading="eager"
-              fetchpriority="high"
-            />
-          </picture>
-          <span class="hero__day" aria-hidden="true">19</span>
+        <div class="hero__main">
+          <div class="hero__lettering">
+            <span class="bleed" style="--bleed: -1.16% -0.72% -1.8% -0.19%"><img src="/art/loved-to-love-emboss.svg" alt="Loved to love" loading="eager" fetchpriority="high" /></span>
+          </div>
+
+          <!-- 燙金日期：Figma「資產 1 1」，各元素照 Figma 百分比定位，整組等比縮放 -->
+          <div class="hero-date">
+            <div class="hero-date__art" role="img" aria-label="2026 年 12 月 12 日 星期六">
+              <span class="cmp-text hero-date__text" style="left: 27.24%; top: 36.81%">DEC</span>
+              <span class="cmp-text hero-date__text" style="left: 64.48%; top: 36.81%">2026</span>
+              <span class="cmp-text hero-date__text hero-date__text--sat" style="left: 47.06%; top: 21.84%">SAT</span>
+              <span class="cmp" style="--i: 44.55% 50.21% 29.24% 47.06%"><img src="/art/hero-date/v0.svg" alt="" /></span>
+              <span class="cmp" style="--i: 44.37% 45.41% 28.97% 51.09%"><img src="/art/hero-date/v1.svg" alt="" /></span>
+              <span class="cmp" style="--i: 33.36% 78.44% 32.53% 21.56%"
+                ><span class="bleed" style="--bleed: -1.47% -0.6943cqw -21.01% -0.6943cqw"><img src="/art/hero-date/v2.svg" alt="" /></span></span>
+              <span class="cmp" style="--i: 33.36% 20.73% 32.53% 79.27%"
+                ><span class="bleed" style="--bleed: -1.47% -0.6943cqw -21.01% -0.6943cqw"><img src="/art/hero-date/v2.svg" alt="" /></span></span>
+              <span class="cmp" style="--i: 33.36% 40.51% 32.53% 59.49%"
+                ><span class="bleed" style="--bleed: -1.47% -0.6943cqw -21.01% -0.6943cqw"><img src="/art/hero-date/v2.svg" alt="" /></span></span>
+              <span class="cmp" style="--i: 33.36% 58.41% 32.53% 41.59%"
+                ><span class="bleed" style="--bleed: -1.47% -0.0906cqw"><img src="/art/hero-date/v3.svg" alt="" /></span></span>
+              <span class="cmp" style="--i: 7.67% 0 92.33% 0"
+                ><span class="bleed" style="--bleed: -0.1813cqw 0"><img src="/art/hero-date/v4.svg" alt="" /></span></span>
+              <span class="cmp" style="--i: 1.55% 0 98.45% 0"
+                ><span class="bleed" style="--bleed: -0.3625cqw 0"><img src="/art/hero-date/v5.svg" alt="" /></span></span>
+              <span class="cmp" style="--i: 91.92% 0 8.08% 0"
+                ><span class="bleed" style="--bleed: -0.1813cqw 0"><img src="/art/hero-date/v4.svg" alt="" /></span></span>
+              <span class="cmp" style="--i: 98.04% 0 1.96% 0"
+                ><span class="bleed" style="--bleed: -0.2719cqw 0"><img src="/art/hero-date/v6.svg" alt="" /></span></span>
+            </div>
+          </div>
         </div>
 
-        <p class="hero__sr-only" hidden>2026 年 12 月 19 日，誠摯邀請您共襄盛舉</p>
+        <!-- 信仰祝福經文 -->
+        <div class="hero__faith">
+          <p class="faith__quote">
+            <span class="faith__quote-tc">「我們愛，因為神先愛我們。」</span>
+            <span class="faith__quote-en">“We love because he first loved us.”</span>
+          </p>
+          <p class="faith__ref">約翰一書 4:19</p>
+        </div>
       </section>
 
-      <!-- ===== 新人與邀請文 ===== -->
-      <section id="couple" aria-label="新人介紹">
-        <div class="section-inner">
-          <p class="couple__names">林承宇<span class="couple__amp">&amp;</span>陳沛瑜</p>
-          <p class="couple__invite">誠摯邀請您與我們共度冬日的午後，<br />見證這一刻</p>
+      <!-- ===== 新人名字＋誠摯邀請日期（巴洛克花卉背景） ===== -->
+      <section id="couple" aria-label="新人">
+        <p class="couple__names">
+          <span>蔡 旻欣</span>
+          <img src="/art/cross-names.svg" alt="" class="couple__cross" width="44" height="64" />
+          <span>邜 航宣</span>
+        </p>
 
-          <figure class="couple__photo">
-            <picture>
-              <source srcset="/art/couple.webp" type="image/webp" />
-              <img src="/art/couple.png" alt="林承宇與陳沛瑜的婚紗照" width="800" height="1200" loading="lazy" />
-            </picture>
-          </figure>
-
-          <div class="couple__verse">
-            <p class="couple__verse-lead">在神的愛中　開啟新的旅程</p>
-            <p class="couple__verse-text">「所以人要離開父母，與妻子連合，二人成為一體。」</p>
-            <p class="couple__verse-ref">創世記 2:24</p>
+        <!-- 誠摯邀請＋日期：Figma「資產 5 1」，各元素照 Figma 百分比定位，整組等比縮放 -->
+        <div class="names-date">
+          <div class="names-date__art" role="img" aria-label="誠摯邀請 2026 年 12 月 12 日 星期六">
+            <span class="cmp" style="--i: 11.88% 66.85% 88.12% 0.12%"
+              ><span class="bleed" style="--bleed: -0.1868cqw -1.98% -1.1184cqw -1.98%"><img src="/art/names-date/v0.svg" alt="" /></span></span>
+            <span class="cmp" style="--i: 11.88% 0.33% 88.12% 66.64%"
+              ><span class="bleed" style="--bleed: -0.1868cqw -1.98% -1.1184cqw -1.98%"><img src="/art/names-date/v1.svg" alt="" /></span></span>
+            <span class="cmp" style="--i: 99.31% 0.12% 0.69% 0.12%"
+              ><span class="bleed" style="--bleed: -0.1868cqw -0.65% -1.1184cqw -0.65%"><img src="/art/names-date/v2.svg" alt="" /></span></span>
+            <span class="cmp-text names-date__invite" style="left: 37.85%; top: 0">誠 摯 邀 請</span>
+            <span class="cmp" style="--i: 36.44% 64.58% 19.7% 35.42%"
+              ><span class="bleed" style="--bleed: -2.52% -0.6526cqw -15.11% -0.6526cqw"><img src="/art/names-date/v3.svg" alt="" /></span></span>
+            <span class="cmp" style="--i: 36.44% 46.39% 19.7% 53.61%"
+              ><span class="bleed" style="--bleed: -2.52% -0.6526cqw -15.11% -0.6526cqw"><img src="/art/names-date/v3.svg" alt="" /></span></span>
+            <span class="cmp" style="--i: 36.44% 28.24% 19.7% 71.76%"
+              ><span class="bleed" style="--bleed: -2.52% -0.6526cqw -15.11% -0.6526cqw"><img src="/art/names-date/v3.svg" alt="" /></span></span>
+            <span class="cmp" style="--i: 46.48% 87.26% 28.34% 9.7%"
+              ><span class="bleed" style="--bleed: -12.39% -51.95% -61.94% -51.95%"><img src="/art/names-date/v4.svg" alt="" /></span></span>
+            <span class="cmp" style="--i: 46.49% 81.77% 28.01% 14.31%"
+              ><span class="bleed" style="--bleed: -12.23% -40.26% -61.16% -40.26%"><img src="/art/names-date/v5.svg" alt="" /></span></span>
+            <span class="cmp" style="--i: 46.48% 77.11% 28.34% 19.84%"
+              ><span class="bleed" style="--bleed: -12.39% -51.63% -61.94% -51.63%"><img src="/art/names-date/v6.svg" alt="" /></span></span>
+            <span class="cmp" style="--i: 37.38% 72.15% 28.06% 24.48%"
+              ><span class="bleed" style="--bleed: -9.02% -46.89% -45.12% -46.89%"><img src="/art/names-date/v7.svg" alt="" /></span></span>
+            <span class="cmp" style="--i: 46.63% 56.97% 28.67% 40.63%"
+              ><span class="bleed" style="--bleed: -12.63% -65.9% -63.15% -65.9%"><img src="/art/names-date/v8.svg" alt="" /></span></span>
+            <span class="cmp" style="--i: 46.48% 52.61% 28.34% 44.34%"
+              ><span class="bleed" style="--bleed: -12.39% -51.79% -61.94% -51.79%"><img src="/art/names-date/v9.svg" alt="" /></span></span>
+            <span class="cmp" style="--i: 46.63% 38.76% 28.67% 58.85%"
+              ><span class="bleed" style="--bleed: -12.63% -65.9% -63.15% -65.9%"><img src="/art/names-date/v10.svg" alt="" /></span></span>
+            <span class="cmp" style="--i: 46.47% 34.39% 28.45% 62.57%"
+              ><span class="bleed" style="--bleed: -12.44% -51.87% -62.2% -51.87%"><img src="/art/names-date/v11.svg" alt="" /></span></span>
+            <span class="cmp-text names-date__weekday" style="left: 76.87%; top: 41.93%">星期六</span>
           </div>
         </div>
       </section>
 
-      <!-- ===== 婚禮資訊 ===== -->
+      <!-- ===== 婚禮資訊：觀禮／席設雙地點 ===== -->
       <section id="details" aria-label="婚禮資訊">
-        <div class="section-inner">
-          <p class="details__date">2026 . 12 . 19</p>
-          <p class="details__sub">農曆十一月初十　·　星期六</p>
-          <p class="details__time">午宴 12:00 準時入席</p>
-
+        <div class="details__venues">
           <div class="details__venue">
-            <p class="details__venue-name">青山教會 · 主堂</p>
-            <p class="details__venue-addr">
-              <a
-                href="https://www.google.com/maps/search/?api=1&query=台北市信義區松山路一段100號"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                台北市信義區松山路一段 100 號
-              </a>
+            <p class="details__venue-head">
+              <span class="details__venue-kind">觀禮</span>
+              <span class="details__hairline" aria-hidden="true"></span>
+              <time class="details__venue-time">09:30 am</time>
             </p>
-            <p class="details__venue-phone"><a href="tel:0223456789">電話：02-2345-6789</a></p>
+            <div class="details__venue-body">
+              <p class="details__venue-name">大甲靈糧堂</p>
+              <p class="details__venue-addr">
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=大甲靈糧堂 台中市大甲區民生路6號"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >台中市大甲區民生路6號（燦坤對面）</a
+                >
+              </p>
+            </div>
+          </div>
+          <div class="details__venue">
+            <p class="details__venue-head">
+              <span class="details__venue-kind">席設</span>
+              <span class="details__hairline" aria-hidden="true"></span>
+              <time class="details__venue-time">12:30 pm</time>
+            </p>
+            <div class="details__venue-body">
+              <p class="details__venue-name">海生海鮮</p>
+              <p class="details__venue-addr">
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=海生海鮮 台中市大安區松雅里松圳路25號"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >台中市大安區松雅里松圳路25號</a
+                >
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -101,7 +209,16 @@
       <!-- ===== RSVP 表單（米白卡片） ===== -->
       <section id="rsvp" aria-label="出席意願表單">
         <div class="section-inner">
-          <h2 class="rsvp__title">敬備喜宴　恭候光臨</h2>
+          <div class="rsvp__heading">
+            <h2 class="rsvp__title">敬備喜宴　恭候光臨</h2>
+            <p class="flourish">
+              <img src="/art/leaf.svg" alt="" class="flourish__leaf" width="43" height="16" />
+              <img src="/art/line-gold-30.svg" alt="" class="flourish__line" />
+              <span class="flourish__text">誠摯邀請您與我們共度與見證這一刻</span>
+              <img src="/art/line-gold-30.svg" alt="" class="flourish__line" />
+              <img src="/art/leaf.svg" alt="" class="flourish__leaf flourish__leaf--flip" width="43" height="16" />
+            </p>
+          </div>
           <p class="rsvp__deadline">請於 2026 年 11 月 20 日前回覆，謝謝您</p>
 
           <div id="rsvp-card" class="rsvp-card">
@@ -220,7 +337,7 @@
               </div>
 
               <!-- 9. 地址（郵寄喜餅時必填） -->
-              <div class="field">
+              <div class="field field--hinted">
                 <label for="address">郵寄地址 <span class="req" data-conditional="address-required" hidden>＊</span></label>
                 <input type="text" id="address" name="address" autocomplete="street-address" />
                 <p class="field__hint">選擇「郵寄」喜餅時必填</p>
@@ -255,8 +372,13 @@
 
       <!-- ===== Footer ===== -->
       <footer id="site-footer">
-        <p class="footer__quote">～ 誠摯的邀請您共享這份喜悅 ～</p>
-        <p class="footer__initials">C &amp; P</p>
+        <p class="flourish flourish--footer">
+          <img src="/art/leaf.svg" alt="" class="flourish__leaf" width="43" height="16" />
+          <img src="/art/line-gold.svg" alt="" class="flourish__line" />
+          <span class="flourish__text">誠摯地邀請您共享這份喜悅</span>
+          <img src="/art/line-gold.svg" alt="" class="flourish__line" />
+          <img src="/art/leaf.svg" alt="" class="flourish__leaf flourish__leaf--flip" width="43" height="16" />
+        </p>
       </footer>
     </div>
 
