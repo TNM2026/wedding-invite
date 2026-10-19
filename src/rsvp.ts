@@ -72,7 +72,6 @@ function initRsvpForm(): void {
 
   const phoneInput = form.querySelector<HTMLInputElement>('#phone');
   const addressInput = form.querySelector<HTMLInputElement>('#address');
-  const addressAsterisk = form.querySelector<HTMLElement>('[data-conditional="address-required"]');
   const partySizeNoteInput = form.querySelector<HTMLInputElement>('#party_note');
   const dietNoteInput = form.querySelector<HTMLInputElement>('#diet_note');
 
@@ -125,12 +124,12 @@ function initRsvpForm(): void {
     });
   });
 
-  // q7 喜餅：選「郵寄」地址才轉必填
+  // q7 喜餅：選「郵寄」才展開地址欄（展開即必填，收起時清空）
   form.querySelectorAll<HTMLInputElement>('input[name="cake"]').forEach((input) => {
     input.addEventListener('change', () => {
       const isMail = getRadioValue(form, 'cake') === 'mail';
+      setConditionalVisible(form, 'address', isMail);
       if (addressInput) addressInput.required = isMail;
-      if (addressAsterisk) addressAsterisk.hidden = !isMail;
     });
   });
 

@@ -7,6 +7,47 @@
     <meta name="description" content="蔡旻欣 & 邜航宣 婚禮邀請函，誠摯邀請您出席並填寫出席意願表單。" />
     <title>蔡旻欣 & 邜航宣 婚禮邀請函</title>
 
+    <!-- 載入畫面（#boot）：主樣式表、字型、信封圖都就緒之前先蓋住整頁，避免看到沒套樣式的畫面。
+         這段樣式必須內嵌在這裡（不能放 style.css），否則它自己也會慢半拍。
+         由 src/envelope.ts 在信封準備好時收掉；8 秒保險（見下方 script）避免任何原因卡住 -->
+    <style>
+      html {
+        background: #47010b;
+      }
+      #boot {
+        display: none;
+      }
+      .has-js #boot {
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #47010b;
+        transition:
+          opacity 0.6s ease,
+          visibility 0s linear 0.6s;
+      }
+      .has-js #boot.is-done {
+        opacity: 0;
+        visibility: hidden;
+      }
+      .boot__ring {
+        width: 30px;
+        height: 30px;
+        border: 1.5px solid rgba(184, 151, 91, 0.25);
+        border-top-color: #b8975b;
+        border-radius: 50%;
+        animation: boot-spin 1s linear infinite;
+      }
+      @keyframes boot-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    </style>
+
     <!-- Google Fonts：Noto Serif TC（中文內文）＋ Lora（首頁日期）＋ Cormorant Garamond（婚禮資訊時間、信封開場 Save the Date）
          源樣明體（新人名字、誠摯邀請、星期六）不在 Google Fonts，自帶精簡字型檔，見 style.css 的 @font-face -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -19,9 +60,16 @@
     <script>
       document.documentElement.classList.add('has-js', 'intro-open');
       if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+      // 保險：8 秒後不管如何都收掉載入畫面（腳本載入失敗時也不會被它擋住）
+      setTimeout(function () {
+        var b = document.getElementById('boot');
+        if (b) b.remove();
+      }, 8000);
     </script>
   </head>
   <body>
+    <div id="boot" role="status" aria-label="載入中"><span class="boot__ring"></span></div>
+
     <!-- Figma「燙金」效果樣式：內陰影 #110F05 60%（1, 2, 模糊 1.9）＋外陰影 #2A0303 20%（3, 3, 模糊 1.1）
          CSS 的 text-shadow 做不出內陰影，所以用 SVG filter，給文字與燙金日期以 filter: url(#gold-foil) 套用 -->
     <svg width="0" height="0" style="position: absolute" aria-hidden="true" focusable="false">
@@ -132,12 +180,9 @@
         <!-- 誠摯邀請＋日期：Figma「資產 5 1」，各元素照 Figma 百分比定位，整組等比縮放 -->
         <div class="names-date">
           <div class="names-date__art" role="img" aria-label="誠摯邀請 2026 年 12 月 12 日 星期六">
-            <span class="cmp" style="--i: 11.88% 66.85% 88.12% 0.12%"
-              ><span class="bleed" style="--bleed: -0.1868cqw -1.98% -1.1184cqw -1.98%"><img src="/art/names-date/v0.svg" alt="" /></span></span>
-            <span class="cmp" style="--i: 11.88% 0.33% 88.12% 66.64%"
-              ><span class="bleed" style="--bleed: -0.1868cqw -1.98% -1.1184cqw -1.98%"><img src="/art/names-date/v1.svg" alt="" /></span></span>
-            <span class="cmp" style="--i: 99.31% 0.12% 0.69% 0.12%"
-              ><span class="bleed" style="--bleed: -0.1868cqw -0.65% -1.1184cqw -0.65%"><img src="/art/names-date/v2.svg" alt="" /></span></span>
+            <span class="cmp cmp--line" style="--i: 11.88% 66.85% 88.12% 0.12%"></span>
+            <span class="cmp cmp--line" style="--i: 11.88% 0.33% 88.12% 66.64%"></span>
+            <span class="cmp cmp--line" style="--i: 99.31% 0.12% 0.69% 0.12%"></span>
             <span class="cmp-text names-date__invite" style="left: 37.85%; top: 0">誠 摯 邀 請</span>
             <span class="cmp" style="--i: 36.44% 64.58% 19.7% 35.42%"
               ><span class="bleed" style="--bleed: -2.52% -0.6526cqw -15.11% -0.6526cqw"><img src="/art/names-date/v3.svg" alt="" /></span></span>
@@ -145,21 +190,21 @@
               ><span class="bleed" style="--bleed: -2.52% -0.6526cqw -15.11% -0.6526cqw"><img src="/art/names-date/v3.svg" alt="" /></span></span>
             <span class="cmp" style="--i: 36.44% 28.24% 19.7% 71.76%"
               ><span class="bleed" style="--bleed: -2.52% -0.6526cqw -15.11% -0.6526cqw"><img src="/art/names-date/v3.svg" alt="" /></span></span>
-            <span class="cmp" style="--i: 46.48% 87.26% 28.34% 9.7%"
+            <span class="cmp cmp--digit" style="--i: 46.48% 87.26% 28.34% 9.7%; --k: 0.7154"
               ><span class="bleed" style="--bleed: -12.39% -51.95% -61.94% -51.95%"><img src="/art/names-date/v4.svg" alt="" /></span></span>
-            <span class="cmp" style="--i: 46.49% 81.77% 28.01% 14.31%"
+            <span class="cmp cmp--digit" style="--i: 46.49% 81.77% 28.01% 14.31%; --k: 0.911"
               ><span class="bleed" style="--bleed: -12.23% -40.26% -61.16% -40.26%"><img src="/art/names-date/v5.svg" alt="" /></span></span>
-            <span class="cmp" style="--i: 46.48% 77.11% 28.34% 19.84%"
+            <span class="cmp cmp--digit" style="--i: 46.48% 77.11% 28.34% 19.84%; --k: 0.7178"
               ><span class="bleed" style="--bleed: -12.39% -51.63% -61.94% -51.63%"><img src="/art/names-date/v6.svg" alt="" /></span></span>
-            <span class="cmp" style="--i: 37.38% 72.15% 28.06% 24.48%"
+            <span class="cmp cmp--digit" style="--i: 37.38% 72.15% 28.06% 24.48%; --k: 0.5779"
               ><span class="bleed" style="--bleed: -9.02% -46.89% -45.12% -46.89%"><img src="/art/names-date/v7.svg" alt="" /></span></span>
-            <span class="cmp" style="--i: 46.63% 56.97% 28.67% 40.63%"
+            <span class="cmp cmp--digit" style="--i: 46.63% 56.97% 28.67% 40.63%; --k: 0.5758"
               ><span class="bleed" style="--bleed: -12.63% -65.9% -63.15% -65.9%"><img src="/art/names-date/v8.svg" alt="" /></span></span>
-            <span class="cmp" style="--i: 46.48% 52.61% 28.34% 44.34%"
+            <span class="cmp cmp--digit" style="--i: 46.48% 52.61% 28.34% 44.34%; --k: 0.7178"
               ><span class="bleed" style="--bleed: -12.39% -51.79% -61.94% -51.79%"><img src="/art/names-date/v9.svg" alt="" /></span></span>
-            <span class="cmp" style="--i: 46.63% 38.76% 28.67% 58.85%"
+            <span class="cmp cmp--digit" style="--i: 46.63% 38.76% 28.67% 58.85%; --k: 0.5734"
               ><span class="bleed" style="--bleed: -12.63% -65.9% -63.15% -65.9%"><img src="/art/names-date/v10.svg" alt="" /></span></span>
-            <span class="cmp" style="--i: 46.47% 34.39% 28.45% 62.57%"
+            <span class="cmp cmp--digit" style="--i: 46.47% 34.39% 28.45% 62.57%; --k: 0.7183"
               ><span class="bleed" style="--bleed: -12.44% -51.87% -62.2% -51.87%"><img src="/art/names-date/v11.svg" alt="" /></span></span>
             <span class="cmp-text names-date__weekday" style="left: 76.87%; top: 41.93%">星期六</span>
           </div>
@@ -338,11 +383,10 @@
                 />
               </div>
 
-              <!-- 9. 地址（郵寄喜餅時必填） -->
-              <div class="field field--hinted">
-                <label for="address">郵寄地址 <span class="req" data-conditional="address-required" hidden>＊</span></label>
+              <!-- 9. 地址（喜餅選「郵寄」才出現，出現即必填） -->
+              <div class="field" data-conditional="address" hidden>
+                <label for="address">郵寄地址 <span class="req">＊</span></label>
                 <input type="text" id="address" name="address" autocomplete="street-address" />
-                <p class="field__hint">選擇「郵寄」喜餅時必填</p>
               </div>
 
               <!-- 10. 祝福與備註 -->

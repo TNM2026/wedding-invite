@@ -14,12 +14,21 @@ function startHeroAnimation(): void {
   document.documentElement.classList.add('hero-in');
 }
 
+/** 收掉 index.html 的載入畫面（#boot）：淡出後移除。載入畫面在樣式、字型、信封圖就緒前蓋住整頁 */
+function hideBoot(): void {
+  const boot = document.querySelector<HTMLElement>('#boot');
+  if (!boot) return;
+  boot.classList.add('is-done');
+  window.setTimeout(() => boot.remove(), 800);
+}
+
 export function setupEnvelopeIntro(): void {
   const intro = document.querySelector<HTMLElement>('#envelope-intro');
   const stage = intro?.querySelector<HTMLElement>('.intro__stage');
   const seal = intro?.querySelector<HTMLButtonElement>('.intro__seal');
   const app = document.querySelector<HTMLElement>('#app');
   if (!intro || !stage || !seal) {
+    hideBoot();
     startHeroAnimation();
     return;
   }
@@ -28,10 +37,16 @@ export function setupEnvelopeIntro(): void {
   app?.setAttribute('inert', '');
   window.scrollTo(0, 0);
 
-  // 等信封圖載入後再淡入，避免半張圖跳出來
+  // 信封圖＋字型都就緒才收掉載入畫面、淡入信封（字型最多等 2.5 秒，慢網路不要卡住）。
+  // main.ts 先 import 了 style.css，跑到這裡時樣式一定已經套上
   const imgs = [...intro.querySelectorAll('img')];
-  Promise.all(imgs.map((img) => (img.complete ? Promise.resolve() : img.decode().catch(() => undefined)))).then(() => {
-    requestAnimationFrame(() => intro.classList.add('is-ready'));
+  const imagesReady = Promise.all(imgs.map((img) => (img.complete ? Promise.resolve() : img.decode().catch(() => undefined))));
+  const fontsReady = Promise.race([document.fonts?.ready ?? Promise.resolve(), wait(2500)]);
+  Promise.all([imagesReady, fontsReady]).then(() => {
+    requestAnimationFrame(() => {
+      intro.classList.add('is-ready');
+      hideBoot();
+    });
     seal.focus({ preventScroll: true });
   });
 

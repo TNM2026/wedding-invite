@@ -136,6 +136,19 @@ a {
   white-space: nowrap;
 }
 
+/* 裝飾細線：全站一律 1px（Haley 2026-10-19）。
+   燙金日期的雙線、誠摯邀請日期的三條線原本是 Figma 匯出的 SVG（2～4px，還會跟著畫面縮放），
+   改成 CSS 畫的 1px 實線；.cmp 的高度是 0，線畫在上緣 */
+.cmp--line {
+  border-top: 1px solid var(--gold);
+}
+
+/* 誠摯邀請日期的線：亞麻色，保留 Figma 的下方陰影（dy 3.54、模糊 2.04、黑 60%，以 760 寬換算成 cqw） */
+.names-date .cmp--line {
+  border-top-color: var(--linen);
+  box-shadow: 0 0.466cqw 0.536cqw rgba(0, 0, 0, 0.6);
+}
+
 /* ==========================================================================
    #hero — 酒紅紙張：頂部列＋壓印 Loved to love＋燙金日期＋經文
    ========================================================================== */
@@ -145,7 +158,6 @@ a {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(48px, 8.333vw, 120px);
   background-color: var(--wine-deep);
   background-image:
     linear-gradient(rgba(15, 0, 0, 0.2), rgba(15, 0, 0, 0.2)),
@@ -162,6 +174,8 @@ a {
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  /* 頂部列到 Loved to love 的距離（原本是 #hero 的 gap，拆開後日期上下才能各自設 64px） */
+  margin-bottom: clamp(48px, 8.333vw, 120px);
   padding: clamp(20px, 2.778vw, 40px) clamp(20px, 4.444vw, 64px) 0;
 }
 
@@ -198,7 +212,8 @@ a {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(32px, 4.444vw, 64px);
+  /* 燙金日期上下都是 64px：上＝這裡的 gap，下＝.hero__faith 的 margin-top（Haley 2026-10-19，所有尺寸） */
+  gap: 64px;
   width: 100%;
   padding: 0 var(--gutter);
 }
@@ -217,23 +232,29 @@ a {
   opacity: 0;
 }
 
+/* Loved to love：跟日期一樣由中間往四周擴散淡入。遮罩套在含陰影外擴的 .bleed 上，邊緣不會被裁；
+   外層 .hero__lettering 一進場就顯示，真正的隱藏／淡入交給 .bleed 的動畫 */
 .hero-in .hero__lettering {
-  animation: hero-fade-up 2.2s var(--ease-soft) 0.3s both;
+  opacity: 1;
+}
+
+.hero__lettering .bleed {
+  -webkit-mask-image: radial-gradient(closest-side, #000 55%, transparent 100%);
+  mask-image: radial-gradient(closest-side, #000 55%, transparent 100%);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: 300% 300%;
+  mask-size: 300% 300%;
+}
+
+.hero-in .hero__lettering .bleed {
+  animation: hero-bloom-round 2.4s var(--ease-soft) 0.3s both;
 }
 
 .hero-in .hero-date__art {
   animation: hero-bloom 2.4s var(--ease-soft) 1.3s both;
-}
-
-@keyframes hero-fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
 }
 
 /* 日期（雙線＋日期字）：用橢圓遮罩從中心往四周放大，邊緣是柔的，同時淡入 */
@@ -250,6 +271,23 @@ a {
     opacity: 1;
     -webkit-mask-size: 300% 600%;
     mask-size: 300% 600%;
+  }
+}
+
+/* Loved to love（手機／平板）：同一個橢圓遮罩，但比例跟著圖片本身（約 1.94:1），擴散出來是一圈圈的橢圓 */
+@keyframes hero-bloom-round {
+  from {
+    opacity: 0;
+    -webkit-mask-size: 0% 0%;
+    mask-size: 0% 0%;
+  }
+  35% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    -webkit-mask-size: 300% 300%;
+    mask-size: 300% 300%;
   }
 }
 
@@ -295,6 +333,7 @@ a {
   align-items: center;
   gap: 7px;
   width: min(1200px, calc(100% - 2 * clamp(20px, 8.333vw, 120px)));
+  margin-top: 64px;
   margin-bottom: clamp(56px, 6.528vw, 94px);
   padding-top: clamp(40px, 4.444vw, 64px);
   border-top: 1px solid var(--gold-30);
@@ -425,7 +464,8 @@ a {
 .details__venues {
   display: flex;
   flex-direction: column;
-  gap: 48px;
+  /* 上下排（1023 以下）時觀禮與席設的距離：48 + 8（Haley 2026-10-19）；1024 以上並排另見 media */
+  gap: 56px;
   width: fit-content;
   max-width: 100%;
   margin: 0 auto;
@@ -435,7 +475,7 @@ a {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 16px;
+  gap: 12px;
 }
 
 .details__venue-head {
@@ -924,9 +964,71 @@ input:invalid.touched {
 }
 
 /* ==========================================================================
-   1024 以上：婚禮資訊兩欄並排（Figma 間距 179）
+   手機＋平板（1023 以下）：Haley 2026-10-19 的微調。桌機（1024 以上）維持 Figma 原樣
+   ========================================================================== */
+@media (max-width: 1023px) {
+  /* 頂部裝飾（兩側花飾＋十字）縮小 0.5 倍 */
+  .hero__ornament {
+    width: calc(86.05px * 0.5);
+    height: calc(27.532px * 0.5);
+  }
+
+  .hero__topcross {
+    width: calc(22px * 0.5);
+    height: calc(32px * 0.5);
+  }
+
+  /* 油畫花卉區：新人名字、誠摯邀請、星期六各縮小 1.5px（0.75px 縮了兩輪） */
+  .couple__names {
+    font-size: calc(clamp(28px, (100vw - 2 * var(--gutter)) * 0.06842, 52px) - 1.5px);
+  }
+
+  .names-date__invite {
+    font-size: calc(3.7292cqw - 1.5px);
+  }
+
+  .names-date__weekday {
+    font-size: calc(4.1954cqw - 1.5px);
+  }
+
+  /* 觀禮／席設：所有文字各縮小 1.5px（這個寬度下原本的 clamp 都落在下限：28／24／16／18） */
+  .details__venue-kind {
+    font-size: 16.5px;
+  }
+
+  .details__venue-time {
+    font-size: 26.5px;
+  }
+
+  .details__venue-name {
+    font-size: 22.5px;
+  }
+
+  .details__venue-addr {
+    font-size: 14.5px;
+  }
+
+  /* 誠摯邀請日期的 2026／12／12 是 SVG 圖：高度各縮 1.5px、寬度等比（--k＝寬高比），以圖層中心為準 */
+  .cmp--digit {
+    margin: 0.75px calc(0.75px * var(--k));
+  }
+}
+
+/* ==========================================================================
+   1024 以上：婚禮資訊兩欄並排（Figma 間距 179）；
+   油畫花卉區的新人名字＋誠摯邀請日期整組縮成 Figma 的 0.75 倍（Haley 2026-10-19）
    ========================================================================== */
 @media (min-width: 1024px) {
+  /* 52 × 0.75（這個寬度下原本的 clamp 一律是上限 52px） */
+  .couple__names {
+    font-size: 39px;
+  }
+
+  /* 760 × 0.75；裡面的字、數字、線條都用 cqw／百分比，跟著等比縮 */
+  .names-date {
+    width: min(570px, 100%);
+  }
+
   .details__venues {
     flex-direction: row;
     align-items: center;
@@ -941,7 +1043,7 @@ input:invalid.touched {
 /* ==========================================================================
    #envelope-intro — 信封開場（每次進站都出現，點一下才打開）
    疊層（後→前）：油畫花卉底圖(scene) → Save THE Date 字 → 封好的信封(closed) → 封蓋＋火漆章(lid) → 提示文字
-   信封照片用 cover 方式放大蓋滿整個視窗（比視窗再大 4%，讓信封圓角落在畫面外）；封好那張垂直壓 13% 對齊打開版比例
+   信封照片用 cover 方式放大蓋滿整個視窗（比視窗再大 4%，讓信封圓角落在畫面外）；信封圖為方形、不透明（Haley 2026-10-19 換新素材）；封蓋 V 形的 clip-path 座標是照圖量出來的，換圖要重量
    時間軸由 src/envelope.ts 切換 class：is-ready → is-pressing → is-opening → is-leaving
    ========================================================================== */
 .intro {
@@ -1009,7 +1111,6 @@ input:invalid.touched {
 .intro__stdate > span {
   display: block;
   opacity: 0;
-  transition: opacity 0.7s ease-out;
 }
 
 .intro__stdate-save,
@@ -1019,6 +1120,8 @@ input:invalid.touched {
 }
 
 .intro__stdate-the {
+  position: relative;
+  top: 2px; /* Haley 2026-10-19：THE 再往下 2px，Save／Date 不動 */
   margin: 0.08em 0 0.1em;
   font-size: 0.34em;
   font-weight: 400;
@@ -1026,33 +1129,36 @@ input:invalid.touched {
   text-indent: 0.7em;
 }
 
-/* 依序淡入：Save → THE → Date，間隔 0.55 秒（延遲是從按下火漆章後算起，封蓋翻起約 1.3 秒後才開始） */
-.intro__stdate .intro__stdate-save {
-  transition-delay: 1.3s;
+/* 依序淡入：Save → THE → Date，間隔 0.55 秒（延遲是從按下火漆章後算起，封蓋翻起約 1.3 秒後才開始）。
+   轉場只掛在 .is-opening 底下：若平時就掛著，樣式表載入的瞬間三個字會從「沒樣式＝顯示」轉場到隱藏，
+   要 3 秒多才藏好；這期間點信封，字早就是顯示狀態，看不到依序浮現（Haley 2026-10-19 回報動畫不見）。
+   延遲那三條的選擇器優先權（0,4,0）要高過 transition 簡寫那條（0,3,1），否則延遲會被重設成 0 */
+.intro.is-opening .intro__stdate > span {
+  opacity: 1;
+  transition: opacity 0.7s ease-out 1.3s;
 }
 
-.intro__stdate .intro__stdate-the {
+.intro.is-opening .intro__stdate > .intro__stdate-the {
   transition-delay: 1.85s;
 }
 
-.intro__stdate .intro__stdate-date {
+.intro.is-opening .intro__stdate > .intro__stdate-date {
   transition-delay: 2.4s;
 }
 
-.intro.is-opening .intro__stdate > span {
-  opacity: 1;
-}
-
-/* 信封：中心對齊視窗，寬度取「蓋滿視窗」所需的最小值再放大 4% */
+/* 信封：火漆章（在信封圖 49.5% 高度）對齊到視窗 --seal-y 的位置，水平置中。
+   Haley 2026-10-19 嫌原本置中偏上 → 往下移到 56%。往下移後信封上緣要更高才蓋得住視窗頂端：
+   寬度至少 56% ÷ 49.5% ≈ 113vh，再留約 3% 餘裕＝117vh；橫向仍要蓋滿＝104vw，取兩者大值 */
 .intro__stage {
-  --w: max(104vw, 104vh * 1.5617);
+  --seal-y: 56%;
+  --w: max(104vw, 117vh);
   position: absolute;
   left: 50%;
-  top: 50%;
+  top: var(--seal-y);
   z-index: 2;
   width: var(--w);
-  aspect-ratio: 1290 / 826;
-  translate: -50% -50%;
+  aspect-ratio: 1 / 1;
+  translate: -50% -49.5%;
   cursor: pointer;
   opacity: 0;
   transition: opacity 0.9s var(--ease-soft);
@@ -1078,11 +1184,14 @@ input:invalid.touched {
   filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.45));
 }
 
-/* 打開時：整封信封把封蓋那塊（V 形）挖掉——封蓋翻起後底下露出油畫，其餘信封之後再淡出 */
+/* 打開時：整封信封把封蓋那塊（V 形）挖掉——封蓋翻起後底下露出油畫；其餘（下半部）往下移動並淡出（Haley 2026-10-19，所有尺寸） */
 .intro.is-opening .intro__closed {
-  clip-path: polygon(0 0, 0 100%, 100% 100%, 100% 0, 53.6% 61%, 51.5% 63.6%, 49.2% 64.4%, 46.9% 63.6%, 45.2% 61%);
+  clip-path: polygon(0 0, 0 100%, 100% 100%, 100% 0, 96% 5%, 90% 11%, 80% 21.5%, 70% 32%, 60% 43%, 55.5% 49%, 53% 51.7%, 50% 52.6%, 47% 51.7%, 44.5% 49%, 40% 45.5%, 30% 35.5%, 20% 24.5%, 10% 12.5%, 4% 6%);
   opacity: 0;
-  transition: opacity 0.9s ease-in 1s;
+  transform: translateY(28%);
+  transition:
+    opacity 1.1s ease-in-out 1s,
+    transform 1.4s cubic-bezier(0.45, 0, 0.7, 0.6) 1s;
 }
 
 /* 封蓋：封好那張的 V 形部分，連同火漆章一起繞上緣翻起 */
@@ -1092,7 +1201,7 @@ input:invalid.touched {
 }
 
 .intro__lid-img {
-  clip-path: polygon(0 0, 100% 0, 53.6% 61%, 51.5% 63.6%, 49.2% 64.4%, 46.9% 63.6%, 45.2% 61%);
+  clip-path: polygon(0 0, 100% 0, 96% 5%, 90% 11%, 80% 21.5%, 70% 32%, 60% 43%, 55.5% 49%, 53% 51.7%, 50% 52.6%, 47% 51.7%, 44.5% 49%, 40% 45.5%, 30% 35.5%, 20% 24.5%, 10% 12.5%, 4% 6%);
 }
 
 .intro.is-opening .intro__lid {
@@ -1106,17 +1215,18 @@ input:invalid.touched {
 /* 火漆章：在封蓋尖端。大小跟視窗走（不跟信封照片放大），不放光暈、不畫邊框 */
 .intro__seal {
   position: absolute;
-  left: 49.2%;
-  top: 58%;
+  left: 50%;
+  top: 49.5%;
   width: clamp(150px, 32vmin, 300px);
-  aspect-ratio: 172 / 175;
+  aspect-ratio: 609 / 602;
   padding: 0;
   border: 0;
   border-radius: 50%;
   background: none;
   cursor: pointer;
   transform: translate(-50%, -50%);
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45));
+  /* 疊兩層陰影：一層貼近邊緣的深影＋一層往下擴散的柔影，讓火漆章像壓在信封上（Haley 2026-10-19 要加陰影） */
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.4)) drop-shadow(0 10px 16px rgba(0, 0, 0, 0.45));
   transition: transform 0.16s ease-out;
 }
 
@@ -1165,7 +1275,7 @@ input:invalid.touched {
    Haley 2026-10-19 決定不論對方手機怎麼設定都要播動畫
    （手機開了「減少動態效果」或省電模式時，之前會整段被跳過） */
 @media (prefers-reduced-motion: reduce) {
-  *:not(#envelope-intro, #envelope-intro *, .hero__lettering, .hero-date__art) {
+  *:not(#envelope-intro, #envelope-intro *, .hero__lettering, .hero__lettering *, .hero-date__art) {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
