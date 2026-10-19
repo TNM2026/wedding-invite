@@ -16,8 +16,6 @@ export function setupEnvelopeIntro(): void {
   const app = document.querySelector<HTMLElement>('#app');
   if (!intro || !stage || !seal) return;
 
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
   // 開場期間網頁本體不可互動、不讓螢幕閱讀器讀到
   app?.setAttribute('inert', '');
   window.scrollTo(0, 0);
@@ -34,19 +32,18 @@ export function setupEnvelopeIntro(): void {
     if (opened) return;
     opened = true;
 
-    if (!reduceMotion) {
-      intro.classList.add('is-pressing');
-      await wait(PRESS_MS);
-      intro.classList.add('is-opening');
-      await wait(FLAP_MS);
-      intro.classList.add('is-letter');
-      await wait(LETTER_MS);
-    }
+    // 不看系統的「減少動態效果」設定，每個人都播完整動畫（Haley 2026-10-19 決定）
+    intro.classList.add('is-pressing');
+    await wait(PRESS_MS);
+    intro.classList.add('is-opening');
+    await wait(FLAP_MS);
+    intro.classList.add('is-letter');
+    await wait(LETTER_MS);
 
     intro.classList.add('is-leaving');
     app?.removeAttribute('inert');
     document.documentElement.classList.remove('intro-open');
-    await wait(reduceMotion ? 50 : LEAVE_MS);
+    await wait(LEAVE_MS);
     intro.remove();
   };
 

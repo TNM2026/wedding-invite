@@ -1159,9 +1159,11 @@ input:invalid.touched {
   transform: translateY(0);
 }
 
-/* 尊重使用者的減少動態偏好設定 */
+/* 尊重使用者的減少動態偏好設定。
+   例外：信封開場（#envelope-intro）是整個網站的主視覺體驗，Haley 2026-10-19 決定不論對方手機怎麼設定都要播動畫
+   （手機開了「減少動態效果」或省電模式時，之前會整段被跳過） */
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *:not(#envelope-intro, #envelope-intro *) {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
