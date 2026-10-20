@@ -112,7 +112,13 @@ a {
   display: block;
 }
 
+/* <picture> 只負責依寬度換圖，不佔版面，裡面的 img 直接照 .bleed 的框排 */
+.bleed > picture {
+  display: contents;
+}
+
 .bleed > img,
+.bleed > picture > img,
 .cmp > img {
   display: block;
   width: 100%;
@@ -978,6 +984,12 @@ input:invalid.touched {
     height: calc(32px * 0.5);
   }
 
+  /* 頂部列英文字（DECEMBER · 2026／SAVE THE DATE）平板改 11px、字距照比例縮成 2.5px（3.64 × 11/16，Haley 2026-10-20）；手機本來就不顯示 */
+  .hero__eyebrow {
+    font-size: 11px;
+    letter-spacing: 2.5px;
+  }
+
   /* 油畫花卉區：新人名字、誠摯邀請、星期六各縮小 1.5px（0.75px 縮了兩輪） */
   .couple__names {
     font-size: calc(clamp(28px, (100vw - 2 * var(--gutter)) * 0.06842, 52px) - 1.5px);
@@ -1057,6 +1069,9 @@ input:invalid.touched {
   z-index: 100;
   overflow: hidden;
   background-color: var(--wine-deep);
+  /* 手機點下去時，瀏覽器預設會在被點的元素上蓋一層半透明反灰（iPhone Safari 是 40% 黑），
+     封蓋翻起時火漆章下方就留下一塊黑灰色方框（Haley 2026-10-20 回報）。這個屬性會繼承，整個開場一起關掉 */
+  -webkit-tap-highlight-color: transparent;
   transition:
     opacity 0.9s var(--ease-soft),
     visibility 0s linear 0.9s;
