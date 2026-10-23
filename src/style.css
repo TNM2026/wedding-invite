@@ -35,7 +35,7 @@
   --forest: #1f3329;
   --forest-hover: #2b4538;
   --cream: #f4efe6;
-  --linen: #e6dccb;
+  --linen: #e9dcbe; /* Haley 2026-10-23 再偏黃一點（Figma 原色 #e6dccb 看起來太白） */
   --gold: #cead6e; /* Haley 2026-10-23 調亮（Figma 原色 #b8975b），public/art 的 SVG 同步換色 */
   --ink: #2b2a28;
   --bark: #6e4f35;
@@ -304,17 +304,19 @@ a {
   width: min(551.667px, 100%);
 }
 
-/* 燙金反光（Haley 2026-10-23）：main.ts 複製一份日期疊在上面、調亮，再用一條斜向漸層遮罩慢慢掃過，
-   只有金色筆畫會被「照亮」，底色不受影響。日期擴散進場（1.3s 起、2.4s）結束後才開始，每 11 秒掃一次 */
-.hero-date__shine {
+/* 燙金反光（Haley 2026-10-23）：main.ts 把每個燙金元素複製一份疊在原本上面、調亮，再用一條斜向漸層遮罩掃過，
+   只有金色筆畫會被「照亮」，底色不受影響。套用在頂部列（花飾、十字、英文字）、燙金日期、經文出處。
+   強度與節奏（Haley 2026-10-23 第二輪：太明顯、間隔要快）：亮度 1.65→1.3、遮罩最亮 0.85→0.5、每 11 秒→7 秒一次 */
+.gold-shine {
   position: absolute;
   inset: 0;
+  margin: 0;
   overflow: hidden;
   pointer-events: none;
   opacity: 0;
-  filter: brightness(1.65) saturate(1.1);
-  -webkit-mask-image: linear-gradient(110deg, transparent 38%, rgba(0, 0, 0, 0.85) 50%, transparent 62%);
-  mask-image: linear-gradient(110deg, transparent 38%, rgba(0, 0, 0, 0.85) 50%, transparent 62%);
+  filter: brightness(1.3) saturate(1.05);
+  -webkit-mask-image: linear-gradient(110deg, transparent 38%, rgba(0, 0, 0, 0.5) 50%, transparent 62%);
+  mask-image: linear-gradient(110deg, transparent 38%, rgba(0, 0, 0, 0.5) 50%, transparent 62%);
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   -webkit-mask-size: 300% 100%;
@@ -323,9 +325,35 @@ a {
   mask-position: 100% 0;
 }
 
-.hero-in .hero-date__shine {
+/* 日期、經文出處的反光層本身也套燙金濾鏡（先調亮再壓內陰影），掃過時打凹感不會消失（Haley 2026-10-23）。
+   頂部列不用：裡面的花飾、十字、英文字各自已帶效果，整層再套會疊兩次。
+   燙金濾鏡會把反光壓暗到幾乎看不見（Haley 回報「動畫不見了」），這兩層的亮度與遮罩另外拉高補回來 */
+.hero-date__shine,
+.faith__ref.gold-shine {
+  filter: brightness(1.5) saturate(1.05) url(#gold-foil);
+  -webkit-mask-image: linear-gradient(110deg, transparent 38%, rgba(0, 0, 0, 0.7) 50%, transparent 62%);
+  mask-image: linear-gradient(110deg, transparent 38%, rgba(0, 0, 0, 0.7) 50%, transparent 62%);
+}
+
+/* 疊在元素自己裡面的反光層（頂部列、經文出處），原元素當定位框 */
+.hero__topbar:not(.gold-shine),
+.faith__ref:not(.gold-shine) {
+  position: relative;
+}
+
+/* 日期擴散進場（1.3s 起、2.4s）結束後才開始；由上往下依序掃：頂部列 → 日期 → 經文出處。
+   Haley 2026-10-23 第三輪：發光之間再緊湊 → 每 7 秒→5 秒一次，掃過速度不變（約 3.15 秒，見 keyframes 63%） */
+.hero-in .gold-shine {
   opacity: 1;
-  animation: gold-shine 11s ease-in-out 4s infinite;
+  animation: gold-shine 5s ease-in-out 4s infinite;
+}
+
+.hero-in .hero-date__shine {
+  animation-delay: 4.3s;
+}
+
+.hero-in .faith__ref > .gold-shine {
+  animation-delay: 4.6s;
 }
 
 @keyframes gold-shine {
@@ -333,7 +361,7 @@ a {
     -webkit-mask-position: 100% 0;
     mask-position: 100% 0;
   }
-  60%,
+  63%,
   to {
     -webkit-mask-position: 0% 0;
     mask-position: 0% 0;
@@ -369,6 +397,34 @@ a {
   letter-spacing: 0.8633cqw;
 }
 
+/* 日期的直線與上下雙線改用 CSS 邊框畫（Haley 2026-10-23）：原本是 SVG 圖，落在小數點像素上會被抗鋸齒糊成兩格寬，
+   四條直線粗細看起來不一；Figma 稿的上下雙線本身也不對稱（上 4px／下 3px、間距不同）。
+   邊框會被瀏覽器對齊到整數像素，粗細固定；雙線統一成外粗 4px＋間距 3px＋內細 2px，上下鏡像（Haley 2026-10-23 從 3／1 加粗） */
+.hero-date__divider {
+  border-left: 1px solid var(--gold);
+}
+
+.hero-date__rule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  box-sizing: content-box;
+  height: 3px;
+  border: 0 solid var(--gold);
+}
+
+.hero-date__rule--top {
+  top: 0;
+  border-top-width: 4px;
+  border-bottom-width: 2px;
+}
+
+.hero-date__rule--bottom {
+  bottom: 0;
+  border-top-width: 2px;
+  border-bottom-width: 4px;
+}
+
 /* 經文：上緣一條淡金線 */
 .hero__faith {
   display: flex;
@@ -388,7 +444,7 @@ a {
   flex-direction: column;
   align-items: center;
   margin: 0;
-  /* 經文 40%（Haley 2026-10-23，原 80%；出處 60%，見 .faith__ref） */
+  /* 經文 40%（Haley 2026-10-23，原 80%；出處 80%，見 .faith__ref） */
   color: rgba(244, 239, 230, 0.4);
 }
 
@@ -416,7 +472,7 @@ a {
   letter-spacing: 4px;
   color: var(--gold);
   filter: url(#gold-foil);
-  opacity: 0.6;
+  opacity: 0.8;
 }
 
 /* ==========================================================================
@@ -455,16 +511,22 @@ a {
   line-height: normal;
   white-space: nowrap;
   color: var(--linen);
+  /* 前兩層是 Figma 的下方陰影；後三層是深色外光暈，把名字跟花卉背景拉開（Haley 2026-10-23，怕字被圖吃掉；第二輪再加濃：0.75／0.55 → 0.95／0.8＋一層更寬的 0.5） */
   text-shadow:
     0 4px 4px rgba(0, 0, 0, 0.8),
-    0 8px 12px rgba(0, 0, 0, 0.15);
+    0 8px 12px rgba(0, 0, 0, 0.15),
+    0 0 0.3em rgba(20, 0, 4, 0.95),
+    0 0 0.8em rgba(20, 0, 4, 0.8),
+    0 0 1.6em rgba(20, 0, 4, 0.5);
 }
 
-/* 十字跟名字字面齊高（Haley 2026-10-23，原本 64 / 52 ≈ 1.23em 比字高） */
+/* 十字比名字字面矮一點（Haley 2026-10-23 第二輪，原 0.92em 齊字高；更早是 64 / 52 ≈ 1.23em） */
 .couple__cross {
   width: auto;
-  height: 0.92em;
+  height: 0.74em;
   overflow: visible;
+  /* 跟名字同一圈深色外光暈，見 .couple__names */
+  filter: drop-shadow(0 0 0.3em rgba(20, 0, 4, 0.95)) drop-shadow(0 0 0.8em rgba(20, 0, 4, 0.6));
 }
 
 /* 誠摯邀請＋日期（Figma「資產 5 1」，760 × 128.249） */
@@ -644,7 +706,7 @@ a {
   font-size: clamp(22px, 1.944vw, 28px);
   line-height: 1.8;
   letter-spacing: 0.1em;
-  color: var(--linen); /* Haley 2026-10-23：改亞麻色 #e6dccb */
+  color: var(--linen); /* Haley 2026-10-23：改亞麻色 */
 }
 
 /* 葉飾＋細線＋燙金小字（RSVP 副標與頁尾共用） */
@@ -1031,7 +1093,7 @@ input:invalid.touched {
     letter-spacing: 2.5px;
   }
 
-  /* 觀禮／席設：所有文字各縮小 1.5px（這個寬度下原本的 clamp 都落在下限：28／24／16／18） */
+  /* 觀禮／席設：所有文字各縮小 1.5px（這個寬度下原本的 clamp 都落在下限：28／24／16／18）；名字例外，見下方 */
   .details__venue-kind {
     font-size: 16.5px;
   }
@@ -1040,8 +1102,9 @@ input:invalid.touched {
     font-size: 26.5px;
   }
 
+  /* 餐廳／教會名字跟「敬備喜宴」同字級（Haley 2026-10-23；.rsvp__title 在這個寬度落在 clamp 下限 22px） */
   .details__venue-name {
-    font-size: 22.5px;
+    font-size: 22px;
   }
 
   .details__venue-addr {
@@ -1121,12 +1184,11 @@ input:invalid.touched {
   }
 }
 
-/* 平板：兩欄撐滿整列（拿掉置中後兩側多出的約 45px），中間距離自動分配（Haley 2026-10-23） */
+/* 平板：兩欄置中、中間距離固定 128px，不隨寬度往兩側拉開（Haley 2026-10-23 第二輪；原本 space-between 撐滿整列，1023 時中間會拉到約 390px）。
+   128 ≈ 1024 桌機版的間距（12.431vw），跨過 1024 不跳 */
 @media (min-width: 768px) and (max-width: 1023px) {
   .details__venues {
-    justify-content: space-between;
-    width: 100%;
-    gap: 32px;
+    gap: 128px;
   }
 }
 
@@ -1390,7 +1452,7 @@ input:invalid.touched {
    Haley 2026-10-19 決定不論對方手機怎麼設定都要播動畫
    （手機開了「減少動態效果」或省電模式時，之前會整段被跳過） */
 @media (prefers-reduced-motion: reduce) {
-  *:not(#envelope-intro, #envelope-intro *, .hero__lettering, .hero__lettering *, .hero-date__art, .hero-date__shine) {
+  *:not(#envelope-intro, #envelope-intro *, .hero__lettering, .hero__lettering *, .hero-date__art, .gold-shine) {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

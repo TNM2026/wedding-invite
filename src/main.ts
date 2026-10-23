@@ -32,16 +32,31 @@ function setupScrollReveal(): void {
   targets.forEach((el) => observer.observe(el));
 }
 
-// 燙金日期的反光層：複製一份日期疊在原本上面，樣式與動畫見 style.css 的 .hero-date__shine
-function setupGoldShine(): void {
-  const art = document.querySelector<HTMLElement>('.hero-date__art');
-  if (!art) return;
-  const shine = art.cloneNode(true) as HTMLElement;
-  shine.className = 'hero-date__shine';
+// 燙金反光層：把燙金元素複製一份疊在原本上面，樣式與動畫見 style.css 的 .gold-shine
+function makeShine(source: Element): HTMLElement {
+  const shine = source.cloneNode(true) as HTMLElement;
+  shine.classList.add('gold-shine');
   shine.removeAttribute('role');
   shine.removeAttribute('aria-label');
   shine.setAttribute('aria-hidden', 'true');
-  art.after(shine);
+  // 疊放用 inline style 寫死：複製層帶著原元素的 class，若 CSS 的 position 被同權重規則蓋掉，
+  // 複製層會跑進排版、在原本旁邊多一份殘影（Haley 2026-10-23 回報）
+  shine.style.position = 'absolute';
+  shine.style.inset = '0';
+  shine.style.margin = '0';
+  return shine;
+}
+
+function setupGoldShine(): void {
+  // 日期：換掉 class（不要 .hero-date__art 的進場遮罩），放在旁邊，由 .hero-date 當定位框
+  const date = document.querySelector('.hero-date__art');
+  if (date) {
+    const shine = makeShine(date);
+    shine.className = 'gold-shine hero-date__shine';
+    date.after(shine);
+  }
+  // 頂部列（花飾、十字、英文字）與經文出處：保留原 class 讓版面一致，放在元素自己裡面
+  document.querySelectorAll('.hero__topbar, .faith__ref').forEach((el) => el.append(makeShine(el)));
 }
 
 setupGoldShine();
