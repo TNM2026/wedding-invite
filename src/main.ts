@@ -3,7 +3,6 @@
 import './style.css';
 import './rsvp.ts';
 import { setupEnvelopeIntro } from './envelope.ts';
-import { setupFoilInner } from './foil.ts';
 
 // 捲動進場：卡片/段落淡入 + 輕微上移，尊重「減少動態」偏好設定，不做 window scroll 事件監聽
 function setupScrollReveal(): void {
@@ -68,7 +67,5 @@ function setupGoldShine(): void {
 }
 
 setupGoldShine();
-// 內陰影要在反光層複製完之後才畫：反光層也各自畫一份，掃過時打凹感不會不見
-setupFoilInner();
 setupEnvelopeIntro();
 setupScrollReveal();

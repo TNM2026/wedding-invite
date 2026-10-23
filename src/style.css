@@ -150,6 +150,12 @@ a {
   border-top: 1px solid var(--gold);
 }
 
+/* 誠摯邀請日期的三條直線：原本是 SVG 圖，落在小數點像素上被抗鋸齒糊掉（Haley 2026-10-24 第十輪），改成 CSS 1px 線，陰影同橫線 */
+.names-date__divider {
+  border-left: 1px solid var(--linen);
+  box-shadow: 0 0.466cqw 0.536cqw rgba(0, 0, 0, 0.6);
+}
+
 /* 誠摯邀請日期的線：亞麻色，保留 Figma 的下方陰影（dy 3.54、模糊 2.04、黑 60%，以 760 寬換算成 cqw） */
 .names-date .cmp--line {
   border-top-color: var(--linen);
@@ -417,7 +423,7 @@ a {
 /* 信封上的引導文字：信封淡入、引導文字出現後就開始反光（不用等 .hero-in） */
 .intro.is-ready .intro__hint-shine {
   opacity: 1;
-  animation: gold-shine 5s ease-in-out 2.7s infinite;
+  animation: gold-shine 5s ease-in-out 1.8s infinite;
 }
 
 @keyframes gold-shine {
@@ -496,7 +502,8 @@ a {
   align-items: center;
   gap: 7px;
   width: min(1200px, calc(100% - 2 * clamp(20px, 8.333vw, 120px)));
-  margin-top: 64px;
+  /* 上方「我們結婚了」到線的距離＝線到經文（Haley 2026-10-24 第十輪，原固定 64px） */
+  margin-top: clamp(40px, 4.444vw, 64px);
   margin-bottom: clamp(56px, 6.528vw, 94px);
   padding-top: clamp(40px, 4.444vw, 64px);
   border-top: 1px solid var(--gold-30);
@@ -569,7 +576,8 @@ a {
   margin: 0;
   font-family: var(--font-genyo);
   font-weight: 700;
-  font-size: 14px;
+  /* 跟地址（.details__venue-addr）同字級（Haley 2026-10-24 第十輪）；手機平板 14.5px 見 1023 斷點 */
+  font-size: clamp(16px, 1.389vw, 20px);
   line-height: normal;
   /* 字距加寬、鬆一點（Haley 2026-10-24 第九輪，原 0.2em）；最後一個字後面也會墊字距，左邊補一份才會置中 */
   letter-spacing: 0.4em;
@@ -619,8 +627,8 @@ a {
   /* 字身框置中後墨色還偏上約 0.095em（量 390／900／1440 三種寬度），往下補 */
   translate: -50% calc(-50% + 0.095em);
   font-weight: 900;
-  /* Haley 2026-10-24 第九輪：太大，縮 2px */
-  font-size: calc(6.149cqw - 2px);
+  /* Haley 2026-10-24 第九輪：太大，縮 2px；第十輪再縮 2px */
+  font-size: calc(6.149cqw - 4px);
   line-height: 1;
 }
 
@@ -1202,6 +1210,10 @@ input:invalid.touched {
     font-size: 14.5px;
   }
 
+  .couple__wish {
+    font-size: 14.5px;
+  }
+
 }
 
 /* ==========================================================================
@@ -1220,14 +1232,10 @@ input:invalid.touched {
     font-size: max(14px, calc(3.7292cqw - 1.5px));
   }
 
-  .couple__wish {
-    font-size: 11px;
-  }
-
   /* 跟數字一起縮：數字墨色高少 1.5px → 字級少 1.5 ÷ 0.95 ≈ 1.579px */
   .names-date__weekday {
-    /* 再縮 2px（Haley 2026-10-24 第九輪） */
-    font-size: calc(6.149cqw - 3.579px);
+    /* 再縮 2px（Haley 2026-10-24 第九輪），第十輪再縮 2px */
+    font-size: calc(6.149cqw - 5.579px);
   }
 
   /* 誠摯邀請日期的 2026／12／12 是 SVG 圖：高度各縮 1.5px、寬度等比（--k＝寬高比），以圖層中心為準 */
@@ -1255,10 +1263,6 @@ input:invalid.touched {
   /* 51 × 0.75、24 × 0.75 */
   #couple {
     gap: 38px;
-  }
-
-  .couple__wish {
-    font-size: 18px;
   }
 
   /* 760 × 0.75 */
@@ -1561,7 +1565,7 @@ input:invalid.touched {
 }
 
 /* 引導文字：You are invited!，跟 Save THE Date 同字形（Cormorant Garamond 斜體），手機平板 24px、桌機 32px，燙金陰影 #gold-foil＋反光（.intro__hint-shine）。
-   Haley 2026-10-23 拿掉葉飾與細線。距離畫面底部 64px（再加上 iPhone 底部安全區）；信封淡入後 1.5 秒淡入一次就停住，
+   Haley 2026-10-23 拿掉葉飾與細線。距離畫面底部 64px（再加上 iPhone 底部安全區）；信封淡入後 0.6 秒淡入一次就停住（第十輪從 1.5 秒提早），
    點下去就收掉。animation 只掛在觸發狀態上（見 10-19 教訓） */
 .intro__hint {
   position: absolute;
@@ -1603,8 +1607,8 @@ input:invalid.touched {
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   animation:
-    intro-hint-in 1.2s ease 1.5s both,
-    intro-hint-breathe 7s ease-in-out 1.5s infinite;
+    intro-hint-in 1.2s ease 0.6s both,
+    intro-hint-breathe 7s ease-in-out 0.6s infinite;
 }
 
 @keyframes intro-hint-breathe {
@@ -1681,8 +1685,19 @@ input:invalid.touched {
    放在檔案最後，才不會被前面同權重的規則蓋掉（10-23 踩過） */
 @media (max-width: 1023px) {
   :root {
-    /* 字外：下緣淡亮邊＋往右下柔影；字裡面左上緣的暗邊（內陰影）由 src/foil.ts 用 canvas 畫 */
+    /* 字外：下緣淡亮邊＋往右下柔影。字裡面的內陰影（10-24 第八、九輪用 canvas 畫）Haley 第十輪嫌效果差，手機平板放棄不做 */
     --foil-sm: drop-shadow(0.5px 1px 0 rgba(255, 232, 186, 0.3)) drop-shadow(1.5px 2px 1px rgba(20, 2, 2, 0.45));
+  }
+
+  /* 日期雙線：外粗 2px、內細 1px（Haley 2026-10-24 第十輪；桌機維持 4／2） */
+  .hero-date__rule--top {
+    border-top-width: 2px;
+    border-bottom-width: 1px;
+  }
+
+  .hero-date__rule--bottom {
+    border-top-width: 1px;
+    border-bottom-width: 2px;
   }
 
   .hero__eyebrow,
