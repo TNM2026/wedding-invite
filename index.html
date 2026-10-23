@@ -105,10 +105,11 @@
         <feOffset in="SourceAlpha" dx="3" dy="3" />
         <feGaussianBlur stdDeviation="0.55" />
         <feColorMatrix type="matrix" values="0 0 0 0 0.165384 0 0 0 0 0.0100185 0 0 0 0 0.0100185 0 0 0 0.2 0" result="drop" />
-        <feOffset in="SourceAlpha" dx="0.4" dy="0.8" />
-        <feGaussianBlur stdDeviation="0.3" />
+        <!-- 10-24 Haley：0.4/0.8、0.3、50% 太弱看不出來，調到桌機跟上一版中間 -->
+        <feOffset in="SourceAlpha" dx="0.7" dy="1.4" />
+        <feGaussianBlur stdDeviation="0.5" />
         <feComposite in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" />
-        <feColorMatrix type="matrix" values="0 0 0 0 0.0653845 0 0 0 0 0.0607447 0 0 0 0 0.0189866 0 0 0 0.5 0" result="inner" />
+        <feColorMatrix type="matrix" values="0 0 0 0 0.0653845 0 0 0 0 0.0607447 0 0 0 0 0.0189866 0 0 0 0.72 0" result="inner" />
         <feMerge>
           <feMergeNode in="drop" />
           <feMergeNode in="SourceGraphic" />
@@ -142,7 +143,7 @@
     <div id="app">
       <!-- ===== Hero：酒紅紙張＋壓印 Loved to love＋燙金日期＋經文 ===== -->
       <section id="hero" aria-label="Save the date">
-        <!-- 頂部裝飾：1023 以下縮 0.5 倍，換成只留外陰影的 -sm 版（Figma 的內陰影在小尺寸會把細線吃暗、看起來糊，Haley 2026-10-20 選 B） -->
+        <!-- 頂部裝飾：1023 以下縮 0.5 倍，換成 -sm 版：燙金外陰影＋打凹改用向量畫、不用 SVG 濾鏡（濾鏡在 iPhone 上縮小顯示會糊，Haley 2026-10-24） -->
         <div class="hero__topbar">
           <span class="hero__ornament">
             <span class="bleed" style="--bleed: -1.36% -4.76% -16.25% 0"><picture><source media="(max-width: 1023px)" srcset="/art/ornament-left-sm.svg" /><img src="/art/ornament-left.svg" alt="" /></picture></span>

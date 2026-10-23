@@ -63,6 +63,12 @@ export function setupEnvelopeIntro(): void {
     // iPhone Safari 上下才不會露出墨綠（Haley 2026-10-23）
     document.documentElement.classList.add('intro-scene');
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#47010b');
+    // iOS 26 Safari 不看 theme-color，改從頁面底色與貼邊的 fixed 元素取色，而且顏色改了不會馬上重取，
+    // 要等捲動／視窗大小改變才重新取色（Haley 2026-10-24 回報上下還是墨綠）。偷捲 1px 再捲回來逼它重取，畫面是 fixed 看不出來
+    requestAnimationFrame(() => {
+      window.scrollTo(0, 1);
+      requestAnimationFrame(() => window.scrollTo(0, 0));
+    });
     await wait(SCREEN_MS);
 
     intro.classList.add('is-leaving');

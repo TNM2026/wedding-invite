@@ -1180,8 +1180,13 @@ input:invalid.touched {
     width: min(340px, 100%);
   }
 
+  /* 誠摯邀請跟下方「期待您…」字級互換（Haley 2026-10-23）：手機原本 11px 比 14px 的邀請語小，改成誠摯邀請至少 14px、邀請語 11px */
   .names-date__invite {
-    font-size: calc(3.7292cqw - 1.5px);
+    font-size: max(14px, calc(3.7292cqw - 1.5px));
+  }
+
+  .couple__wish {
+    font-size: 11px;
   }
 
   .names-date__weekday {
@@ -1240,11 +1245,18 @@ input:invalid.touched {
   }
 }
 
-/* 平板：兩欄置中、中間距離固定 128px，不隨寬度往兩側拉開（Haley 2026-10-23 第二輪；原本 space-between 撐滿整列，1023 時中間會拉到約 390px）。
-   128 ≈ 1024 桌機版的間距（12.431vw），跨過 1024 不跳 */
-@media (min-width: 768px) and (max-width: 1023px) {
+/* 平板：兩欄置中並排，不隨寬度往兩側拉開（Haley 2026-10-23 第二輪；原本 space-between 撐滿整列，1023 時中間會拉到約 390px）。
+   10-24：iPad mini 直拿只有 744px 寬，原本 768 才並排、它會變上下排；並排提前到 744，中間距離縮小（最少 80px）才擺得下，
+   到 1023 時約 127px，跟 1024 桌機版（12.431vw）接得上 */
+@media (min-width: 744px) and (max-width: 1023px) {
   .details__venues {
-    gap: 128px;
+    flex-direction: row;
+    align-items: center;
+    gap: clamp(80px, 12.431vw, 128px);
+  }
+
+  .details__venue-addr {
+    white-space: nowrap;
   }
 }
 
@@ -1468,14 +1480,24 @@ input:invalid.touched {
   transition: transform 0.16s ease-out;
 }
 
-/* 陰影疊兩層：一層貼近邊緣的深影＋一層往下擴散的柔影，讓火漆章像壓在信封上（Haley 2026-10-19 要加陰影）。
-   陰影要掛在 img 本身、不能掛在按鈕上：img 有擺動動畫會變成獨立圖層，iPhone Safari 對「子層在動的父層」套 drop-shadow 時
-   會沿按鈕的方框畫陰影，按下時露出ㄇ字型黑影（Haley 2026-10-23 回報） */
+/* 陰影：讓火漆章像壓在信封上（Haley 2026-10-19 要加陰影）。
+   不用 filter: drop-shadow——火漆章在擺動、按下會縮放，iPhone Safari 對這種圖層套 drop-shadow 會沿方框裁切，
+   按下時露出ㄇ字型黑影（Haley 2026-10-23、10-24 兩次回報，把陰影從按鈕移到 img 也沒用）。
+   改成章後面墊一塊往下偏的圓形漸層，完全不經過濾鏡 */
+.intro__seal::before {
+  content: '';
+  position: absolute;
+  inset: 2% -5% -12% -5%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.5) 72%, rgba(0, 0, 0, 0.22) 86%, rgba(0, 0, 0, 0));
+  pointer-events: none;
+}
+
 .intro__seal img {
+  position: relative;
   display: block;
   width: 100%;
   height: 100%;
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.4)) drop-shadow(0 10px 16px rgba(0, 0, 0, 0.45));
 }
 
 /* 火漆章原地輕微擺動（Haley 2026-10-23）：轉 img 不轉按鈕，按鈕的 transform 留給聚焦放大與按下縮小。
