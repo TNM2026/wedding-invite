@@ -7,7 +7,8 @@
 
 const MQ = window.matchMedia('(max-width: 1023px)');
 // 對應 Figma 燙金內陰影 #110F05（桌機 1, 2, 模糊 1.9）；手機字小，位移與模糊按比例縮
-const INNER = { dx: 0.8, dy: 1.6, blur: 0.6, color: '#110f05', alpha: 0.85 };
+// 第九輪（Haley 2026-10-24 手機看仍沒感覺）：原 0.8／1.6／0.6／0.85 → 位移與模糊加大、不透明度拉滿
+const INNER = { dx: 1.2, dy: 2.2, blur: 0.8, color: '#110f05', alpha: 1 };
 const PAD = 4; // 字形可能超出元素框一點點，畫布四周多留
 
 const TARGETS = '.hero__eyebrow, .hero-names, .hero-date__art, .hero-date__shine, .faith__ref, .intro__hint, .intro__hint-shine';

@@ -571,7 +571,9 @@ a {
   font-weight: 700;
   font-size: 14px;
   line-height: normal;
-  letter-spacing: 0.2em;
+  /* 字距加寬、鬆一點（Haley 2026-10-24 第九輪，原 0.2em）；最後一個字後面也會墊字距，左邊補一份才會置中 */
+  letter-spacing: 0.4em;
+  padding-left: 0.4em;
   text-align: center;
   color: var(--linen);
   text-shadow:
@@ -617,25 +619,34 @@ a {
   /* 字身框置中後墨色還偏上約 0.095em（量 390／900／1440 三種寬度），往下補 */
   translate: -50% calc(-50% + 0.095em);
   font-weight: 900;
-  font-size: 6.149cqw;
+  /* Haley 2026-10-24 第九輪：太大，縮 2px */
+  font-size: calc(6.149cqw - 2px);
   line-height: 1;
 }
 
-/* 「我們結婚了!」（Haley 2026-10-24）：雙線日期下方，樣式同經文中文行；跟日期距離 24px（.hero__main gap 48 扣回 24），日期出現後淡入 */
-.hero__married {
-  margin-top: -24px;
-}
-
-.hero__married .faith__quote-tc {
-  margin-bottom: 0;
-}
-
-.has-js .hero__married {
+/* 「我們結婚了!」（Haley 2026-10-24）：雙線日期下方，日期出現後淡入。
+   第九輪：燙金、字級跟經文出處（.faith__ref）一樣；跟日期的距離＝名字↔日期，直接用 .hero__main 的 gap 48px。
+   淡入終點停在 .faith__ref 的 0.8；:not(.gold-shine) 避免反光複製層也吃到淡入動畫 */
+.has-js .hero__married:not(.gold-shine) {
   opacity: 0;
 }
 
-.hero-in .hero__married {
-  animation: hero-bloom 2.4s var(--ease-soft) 2.2s both;
+.hero-in .hero__married:not(.gold-shine) {
+  animation: hero-married-in 2.4s var(--ease-soft) 2.2s both;
+}
+
+.hero-in .hero__married > .gold-shine {
+  animation-delay: 4.75s;
+}
+
+@keyframes hero-married-in {
+  from {
+    opacity: 0;
+  }
+  35%,
+  to {
+    opacity: 0.8;
+  }
 }
 
 /* ==========================================================================
@@ -1215,7 +1226,8 @@ input:invalid.touched {
 
   /* 跟數字一起縮：數字墨色高少 1.5px → 字級少 1.5 ÷ 0.95 ≈ 1.579px */
   .names-date__weekday {
-    font-size: calc(6.149cqw - 1.579px);
+    /* 再縮 2px（Haley 2026-10-24 第九輪） */
+    font-size: calc(6.149cqw - 3.579px);
   }
 
   /* 誠摯邀請日期的 2026／12／12 是 SVG 圖：高度各縮 1.5px、寬度等比（--k＝寬高比），以圖層中心為準 */
@@ -1555,7 +1567,11 @@ input:invalid.touched {
   position: absolute;
   left: var(--gutter);
   right: var(--gutter);
-  bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  /* 垂直位置：火漆章下緣與畫面底部的正中間（Haley 2026-10-24 第九輪，原距底 64px）。
+     章中心在 56%（.intro__stage 的 --seal-y）、章高＝寬 × 602/609，信封出現時章會被 focus、放大 1.06 倍（.intro__seal:focus-visible）→ 下緣 56% + 章高 × 1.06 / 2；與 100% 的中點＝78% + 章高 × 1.06 / 4。
+     扣掉 iPhone 底部安全區的一半，對準看得到的區域 */
+  top: calc(78% + clamp(150px, 32vmin, 300px) * 0.2619 - env(safe-area-inset-bottom, 0px) / 2);
+  translate: 0 -50%;
   z-index: 3;
   margin: 0;
   font-family: var(--font-display);
@@ -1577,7 +1593,7 @@ input:invalid.touched {
   }
 }
 
-/* 淡入後開始「呼吸」（Haley 2026-10-24）：一道亮的透明度波由左往右慢慢掃過，其餘維持 45%，循環不停。
+/* 淡入後開始「呼吸」（Haley 2026-10-24；第九輪嫌快，4.5 → 7 秒一輪）：一道亮的透明度波由左往右慢慢掃過，其餘維持 45%，循環不停。
    做法＝漸層遮罩（45% → 100% → 45%）放大 3 倍、位置由右往左移，視覺上亮處由左往右走；遮罩也一併蓋住反光層 */
 .intro.is-ready:not(.is-pressing) .intro__hint {
   -webkit-mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.45) 20%, #000 50%, rgba(0, 0, 0, 0.45) 80%);
@@ -1588,7 +1604,7 @@ input:invalid.touched {
   mask-repeat: no-repeat;
   animation:
     intro-hint-in 1.2s ease 1.5s both,
-    intro-hint-breathe 4.5s ease-in-out 1.5s infinite;
+    intro-hint-breathe 7s ease-in-out 1.5s infinite;
 }
 
 @keyframes intro-hint-breathe {
