@@ -22,6 +22,26 @@ function hideBoot(): void {
   window.setTimeout(() => boot.remove(), 800);
 }
 
+/**
+ * 讓 iOS 26 Safari 重新取上下（狀態列／網址列）的顏色。
+ * iOS 26 Safari 不看 theme-color，改從頁面底色與貼邊的 fixed 元素取色，顏色改了也不會馬上重取，要等捲動才重取。
+ * 偷捲 1px 再捲回來（畫面是 fixed 看不出來）。10-24 第一版沒效：開場期間 html／body 是 overflow: hidden，
+ * iPhone 上 scrollTo 根本捲不動（Haley 回報 Save the date 那幕上下仍墨綠）→ 捲的那一下暫時解開 overflow
+ */
+function refreshSafariTint(): void {
+  const root = document.documentElement;
+  root.style.overflow = 'visible';
+  document.body.style.overflow = 'visible';
+  requestAnimationFrame(() => {
+    window.scrollTo(0, 1);
+    requestAnimationFrame(() => {
+      window.scrollTo(0, 0);
+      root.style.overflow = '';
+      document.body.style.overflow = '';
+    });
+  });
+}
+
 export function setupEnvelopeIntro(): void {
   const intro = document.querySelector<HTMLElement>('#envelope-intro');
   const stage = intro?.querySelector<HTMLElement>('.intro__stage');
@@ -63,12 +83,7 @@ export function setupEnvelopeIntro(): void {
     // iPhone Safari 上下才不會露出墨綠（Haley 2026-10-23）
     document.documentElement.classList.add('intro-scene');
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#47010b');
-    // iOS 26 Safari 不看 theme-color，改從頁面底色與貼邊的 fixed 元素取色，而且顏色改了不會馬上重取，
-    // 要等捲動／視窗大小改變才重新取色（Haley 2026-10-24 回報上下還是墨綠）。偷捲 1px 再捲回來逼它重取，畫面是 fixed 看不出來
-    requestAnimationFrame(() => {
-      window.scrollTo(0, 1);
-      requestAnimationFrame(() => window.scrollTo(0, 0));
-    });
+    refreshSafariTint();
     await wait(SCREEN_MS);
 
     intro.classList.add('is-leaving');
@@ -77,6 +92,7 @@ export function setupEnvelopeIntro(): void {
     document.documentElement.classList.remove('intro-open', 'intro-scene');
     await wait(LEAVE_MS);
     intro.remove();
+    refreshSafariTint();
   };
 
   stage.addEventListener('click', open);
