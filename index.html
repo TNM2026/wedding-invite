@@ -10,9 +10,16 @@
     <!-- 載入畫面（#boot）：主樣式表、字型、信封圖都就緒之前先蓋住整頁，避免看到沒套樣式的畫面。
          這段樣式必須內嵌在這裡（不能放 style.css），否則它自己也會慢半拍。
          由 src/envelope.ts 在信封準備好時收掉；8 秒保險（見下方 script）避免任何原因卡住 -->
+    <!-- 網址列／狀態列顏色：信封開場時是墨綠，進入首頁後 src/envelope.ts 換回酒紅 -->
+    <meta name="theme-color" content="#263529" />
     <style>
       html {
         background: #47010b;
+      }
+      /* 信封開場時頁面底色改墨綠（信封邊緣的顏色）：iPhone Safari 會用頁面底色填上下的網址列與安全區，
+         原本露出酒紅色（Haley 2026-10-23 回報）。載入畫面在信封之前，一起改墨綠才不會先紅後綠 */
+      html.intro-open {
+        background: #263529;
       }
       #boot {
         display: none;
@@ -24,7 +31,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #47010b;
+        background: #263529;
         transition:
           opacity 0.6s ease,
           visibility 0s linear 0.6s;
@@ -107,6 +114,8 @@
           </button>
         </div>
       </div>
+      <!-- 引導文字：You are invited!，跟 Save THE Date 同字形，燙金陰影＋反光，距離底部 64px -->
+      <p class="intro__hint" aria-hidden="true">You are invited!</p>
     </div>
 
     <div id="app">
@@ -129,8 +138,15 @@
 
         <div class="hero__main">
           <div class="hero__lettering">
-            <span class="bleed" style="--bleed: -1.16% -0.72% -1.8% -0.19%"><img src="/art/loved-to-love-emboss.svg" alt="Loved to love" loading="eager" fetchpriority="high" /></span>
+            <span class="bleed" style="--bleed: -2.14% -1.47% -3.16% -0.74%"><img src="/art/loved-to-love-emboss.svg" alt="Loved to love" loading="eager" fetchpriority="high" /></span>
           </div>
+
+          <!-- 新人名字：Haley 2026-10-23 從花卉區移到這裡，改燙金（同日期的 #gold-foil 效果＋反光）；上下距離 64px 跟著 .hero__main 的 gap -->
+          <p class="hero-names" aria-label="蔡旻欣 與 邜航宣">
+            <span>蔡 旻欣</span>
+            <img src="/art/cross-names-gold.svg" alt="" class="hero-names__cross" width="30" height="50" />
+            <span>邜 航宣</span>
+          </p>
 
           <!-- 燙金日期：Figma「資產 1 1」，各元素照 Figma 百分比定位，整組等比縮放 -->
           <div class="hero-date">
@@ -160,14 +176,8 @@
         </div>
       </section>
 
-      <!-- ===== 新人名字＋誠摯邀請日期（巴洛克花卉背景） ===== -->
+      <!-- ===== 誠摯邀請日期＋邀請語（巴洛克花卉背景）；新人名字 2026-10-23 移到 Hero ===== -->
       <section id="couple" aria-label="新人">
-        <p class="couple__names">
-          <span>蔡 旻欣</span>
-          <img src="/art/cross-names.svg" alt="" class="couple__cross" width="44" height="64" />
-          <span>邜 航宣</span>
-        </p>
-
         <!-- 誠摯邀請＋日期：Figma「資產 5 1」，各元素照 Figma 百分比定位，整組等比縮放 -->
         <div class="names-date">
           <div class="names-date__art" role="img" aria-label="誠摯邀請 2026 年 12 月 12 日 星期六">
@@ -200,6 +210,7 @@
             <span class="cmp-text names-date__weekday" style="left: 76.87%; top: 41.93%">星期六</span>
           </div>
         </div>
+        <p class="couple__wish">期待您與我們共度，見證這一刻</p>
       </section>
 
       <!-- ===== 婚禮資訊：觀禮／席設雙地點 ===== -->

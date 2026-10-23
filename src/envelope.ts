@@ -65,6 +65,8 @@ export function setupEnvelopeIntro(): void {
     startHeroAnimation();
     app?.removeAttribute('inert');
     document.documentElement.classList.remove('intro-open');
+    // 網址列顏色跟著換回首頁的酒紅（開場時是墨綠，見 index.html 的 theme-color）
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#47010b');
     await wait(LEAVE_MS);
     intro.remove();
   };
