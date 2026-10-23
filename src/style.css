@@ -250,9 +250,11 @@ a {
   display: none;
 }
 
+/* 十字對齊名字的墨色中心（Haley 2026-10-24 回報沒垂直置中）：flex 置中的是字身框，中文墨色比框中心低約 0.058em（量 390／1440 兩種寬度一致） */
 .hero-names__cross {
   width: auto;
   height: 0.74em;
+  translate: 0 0.058em;
 }
 
 /* 字距加寬、鬆散一點（Haley 2026-10-23）；字距會多墊在最後一個字後面，用負右邊距抵掉，十字兩側才等距 */
@@ -608,10 +610,32 @@ a {
   letter-spacing: 0.7459cqw;
 }
 
+/* 星期六：字的實際墨色高度跟旁邊 2026／12／12 數字同高、垂直置中（Haley 2026-10-24 嫌太小）。
+   數字墨色高 5.8416cqw、中心在 54.68%；源樣明體 Heavy「星期六」墨色高 0.95em → 字級 5.8416 ÷ 0.95 ≈ 6.149cqw。
+   left／top 是中心點（index.html 行內），水平中心沿用原本位置（右側細線中段） */
 .names-date__weekday {
+  /* 字身框置中後墨色還偏上約 0.095em（量 390／900／1440 三種寬度），往下補 */
+  translate: -50% calc(-50% + 0.095em);
   font-weight: 900;
-  font-size: 4.1954cqw;
-  line-height: 1.16;
+  font-size: 6.149cqw;
+  line-height: 1;
+}
+
+/* 「我們結婚了!」（Haley 2026-10-24）：雙線日期下方，樣式同經文中文行；跟日期距離 24px（.hero__main gap 48 扣回 24），日期出現後淡入 */
+.hero__married {
+  margin-top: -24px;
+}
+
+.hero__married .faith__quote-tc {
+  margin-bottom: 0;
+}
+
+.has-js .hero__married {
+  opacity: 0;
+}
+
+.hero-in .hero__married {
+  animation: hero-bloom 2.4s var(--ease-soft) 2.2s both;
 }
 
 /* ==========================================================================
@@ -1189,8 +1213,9 @@ input:invalid.touched {
     font-size: 11px;
   }
 
+  /* 跟數字一起縮：數字墨色高少 1.5px → 字級少 1.5 ÷ 0.95 ≈ 1.579px */
   .names-date__weekday {
-    font-size: calc(4.1954cqw - 1.5px);
+    font-size: calc(6.149cqw - 1.579px);
   }
 
   /* 誠摯邀請日期的 2026／12／12 是 SVG 圖：高度各縮 1.5px、寬度等比（--k＝寬高比），以圖層中心為準 */
@@ -1552,8 +1577,29 @@ input:invalid.touched {
   }
 }
 
+/* 淡入後開始「呼吸」（Haley 2026-10-24）：一道亮的透明度波由左往右慢慢掃過，其餘維持 45%，循環不停。
+   做法＝漸層遮罩（45% → 100% → 45%）放大 3 倍、位置由右往左移，視覺上亮處由左往右走；遮罩也一併蓋住反光層 */
 .intro.is-ready:not(.is-pressing) .intro__hint {
-  animation: intro-hint-in 1.2s ease 1.5s both;
+  -webkit-mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.45) 20%, #000 50%, rgba(0, 0, 0, 0.45) 80%);
+  mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.45) 20%, #000 50%, rgba(0, 0, 0, 0.45) 80%);
+  -webkit-mask-size: 300% 100%;
+  mask-size: 300% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  animation:
+    intro-hint-in 1.2s ease 1.5s both,
+    intro-hint-breathe 4.5s ease-in-out 1.5s infinite;
+}
+
+@keyframes intro-hint-breathe {
+  from {
+    -webkit-mask-position: 100% 0;
+    mask-position: 100% 0;
+  }
+  to {
+    -webkit-mask-position: 0% 0;
+    mask-position: 0% 0;
+  }
 }
 
 @keyframes intro-hint-in {
@@ -1619,7 +1665,8 @@ input:invalid.touched {
    放在檔案最後，才不會被前面同權重的規則蓋掉（10-23 踩過） */
 @media (max-width: 1023px) {
   :root {
-    --foil-sm: drop-shadow(-0.5px -1px 0 rgba(17, 15, 5, 0.95)) drop-shadow(0.5px 1px 0 rgba(255, 232, 186, 0.4)) drop-shadow(1.5px 2px 1px rgba(20, 2, 2, 0.5));
+    /* 字外：下緣淡亮邊＋往右下柔影；字裡面左上緣的暗邊（內陰影）由 src/foil.ts 用 canvas 畫 */
+    --foil-sm: drop-shadow(0.5px 1px 0 rgba(255, 232, 186, 0.3)) drop-shadow(1.5px 2px 1px rgba(20, 2, 2, 0.45));
   }
 
   .hero__eyebrow,
@@ -1629,14 +1676,23 @@ input:invalid.touched {
     filter: var(--foil-sm);
   }
 
+  .intro__hint {
+    filter: brightness(1.3) var(--foil-sm);
+  }
+
+  /* 反光在手機上不明顯（Haley 2026-10-24）：亮度與遮罩最亮處都拉高（桌機照舊）。頂部列原本 1.3／0.5，其餘 1.5／0.7 */
+  .gold-shine {
+    filter: brightness(1.9) saturate(1.1);
+    -webkit-mask-image: linear-gradient(110deg, transparent 36%, rgba(0, 0, 0, 0.95) 50%, transparent 64%);
+    mask-image: linear-gradient(110deg, transparent 36%, rgba(0, 0, 0, 0.95) 50%, transparent 64%);
+  }
+
   .hero-date__shine,
   .hero-names.gold-shine,
   .faith__ref.gold-shine,
   .intro__hint-shine {
-    filter: brightness(1.5) saturate(1.05) var(--foil-sm);
-  }
-
-  .intro__hint {
-    filter: brightness(1.3) var(--foil-sm);
+    filter: brightness(2.1) saturate(1.1) var(--foil-sm);
+    -webkit-mask-image: linear-gradient(110deg, transparent 36%, #000 50%, transparent 64%);
+    mask-image: linear-gradient(110deg, transparent 36%, #000 50%, transparent 64%);
   }
 }
