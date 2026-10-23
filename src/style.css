@@ -2,7 +2,7 @@
    蔡旻欣 & 邜航宣 婚禮邀請函 — 樣式表
    設計來源：Figma「Untitled」node 1:7（1440 桌機稿，2026-10-19 版）
    RWD：Figma 只有 1440 桌機稿，數值用 clamp() 以 1440 為上限等比縮放；
-        斷點 768（平板：頂部列顯示英文字）／1024（婚禮資訊兩欄並排）
+        斷點 768（平板：頂部列顯示英文字、婚禮資訊兩欄並排）／1024（頂部裝飾恢復原尺寸）／1280（電腦版：新人區放大、經文原字級）
    ========================================================================== */
 
 /* ---------- 源樣明體（GenYoMin TW，OFL 授權）：只收新人名字＋誠摯邀請＋星期六用到的 13 個字 ---------- */
@@ -36,15 +36,15 @@
   --forest-hover: #2b4538;
   --cream: #f4efe6;
   --linen: #e6dccb;
-  --gold: #b8975b;
+  --gold: #cead6e; /* Haley 2026-10-23 調亮（Figma 原色 #b8975b），public/art 的 SVG 同步換色 */
   --ink: #2b2a28;
   --bark: #6e4f35;
 
   /* 半透明版本 */
   --cream-80: rgba(244, 239, 230, 0.8);
   --cream-60: rgba(244, 239, 230, 0.6);
-  --gold-30: rgba(184, 151, 91, 0.3);
-  --gold-25: rgba(184, 151, 91, 0.25);
+  --gold-30: rgba(206, 173, 110, 0.3);
+  --gold-25: rgba(206, 173, 110, 0.25);
   --ink-10: rgba(43, 42, 40, 0.1);
   --ink-16: rgba(43, 42, 40, 0.16);
 
@@ -299,8 +299,45 @@ a {
 
 /* 燙金日期（Figma「資產 1 1」，551.667 × 100） */
 .hero-date {
+  position: relative;
   container-type: inline-size;
   width: min(551.667px, 100%);
+}
+
+/* 燙金反光（Haley 2026-10-23）：main.ts 複製一份日期疊在上面、調亮，再用一條斜向漸層遮罩慢慢掃過，
+   只有金色筆畫會被「照亮」，底色不受影響。日期擴散進場（1.3s 起、2.4s）結束後才開始，每 11 秒掃一次 */
+.hero-date__shine {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  filter: brightness(1.65) saturate(1.1);
+  -webkit-mask-image: linear-gradient(110deg, transparent 38%, rgba(0, 0, 0, 0.85) 50%, transparent 62%);
+  mask-image: linear-gradient(110deg, transparent 38%, rgba(0, 0, 0, 0.85) 50%, transparent 62%);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 300% 100%;
+  mask-size: 300% 100%;
+  -webkit-mask-position: 100% 0;
+  mask-position: 100% 0;
+}
+
+.hero-in .hero-date__shine {
+  opacity: 1;
+  animation: gold-shine 11s ease-in-out 4s infinite;
+}
+
+@keyframes gold-shine {
+  from {
+    -webkit-mask-position: 100% 0;
+    mask-position: 100% 0;
+  }
+  60%,
+  to {
+    -webkit-mask-position: 0% 0;
+    mask-position: 0% 0;
+  }
 }
 
 .hero-date__art {
@@ -351,11 +388,13 @@ a {
   flex-direction: column;
   align-items: center;
   margin: 0;
-  color: var(--cream-80);
+  /* 經文 40%（Haley 2026-10-23，原 80%；出處 60%，見 .faith__ref） */
+  color: rgba(244, 239, 230, 0.4);
 }
 
+/* 中英文拉近：負 margin 只縮中英之間，英文到出處的距離不變（Haley 2026-10-23，原 -1px） */
 .faith__quote-tc {
-  margin-bottom: -1px;
+  margin-bottom: -6px;
   font-weight: 600;
   font-size: 16px;
   line-height: 28.5px;
@@ -377,6 +416,7 @@ a {
   letter-spacing: 4px;
   color: var(--gold);
   filter: url(#gold-foil);
+  opacity: 0.6;
 }
 
 /* ==========================================================================
@@ -388,7 +428,8 @@ a {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(40px, 5.264vw, 75.8px);
+  /* 名字與日期的距離所有尺寸一致 20px（Haley 2026-10-23 選平板版本，原 clamp 40～75.8） */
+  gap: 20px;
   padding: clamp(96px, 15.617vw, 224.88px) var(--gutter) clamp(96px, 12.296vw, 177.07px);
   background-color: var(--wine-deep);
   background-image:
@@ -404,7 +445,7 @@ a {
 
 .couple__names {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   /* 名字跟下方「誠摯邀請」區塊（最寬 760）等比：52 / 760 ≈ 6.842%；手機最小 28px 保持可讀 */
   gap: 1.154em;
   margin: 0;
@@ -419,10 +460,10 @@ a {
     0 8px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* 十字 44×64，跟著名字字級等比縮放（64 / 52） */
+/* 十字跟名字字面齊高（Haley 2026-10-23，原本 64 / 52 ≈ 1.23em 比字高） */
 .couple__cross {
   width: auto;
-  height: 1.2308em;
+  height: 0.92em;
   overflow: visible;
 }
 
@@ -470,7 +511,7 @@ a {
 .details__venues {
   display: flex;
   flex-direction: column;
-  /* 上下排（1023 以下）時觀禮與席設的距離：48 + 8（Haley 2026-10-19）；1024 以上並排另見 media */
+  /* 上下排（767 以下）時觀禮與席設的距離：48 + 8（Haley 2026-10-19）；768 以上並排另見 media */
   gap: 56px;
   width: fit-content;
   max-width: 100%;
@@ -545,7 +586,7 @@ a {
   color: inherit;
   text-decoration: underline;
   text-decoration-thickness: 1px;
-  text-decoration-color: rgba(184, 151, 91, 0.35);
+  text-decoration-color: rgba(206, 173, 110, 0.35);
   text-underline-offset: 0.3em;
   transition: text-decoration-color 0.3s var(--ease-soft);
 }
@@ -603,7 +644,7 @@ a {
   font-size: clamp(22px, 1.944vw, 28px);
   line-height: 1.8;
   letter-spacing: 0.1em;
-  color: var(--cream);
+  color: var(--linen); /* Haley 2026-10-23：改亞麻色 #e6dccb */
 }
 
 /* 葉飾＋細線＋燙金小字（RSVP 副標與頁尾共用） */
@@ -990,19 +1031,6 @@ input:invalid.touched {
     letter-spacing: 2.5px;
   }
 
-  /* 油畫花卉區：新人名字、誠摯邀請、星期六各縮小 1.5px（0.75px 縮了兩輪） */
-  .couple__names {
-    font-size: calc(clamp(28px, (100vw - 2 * var(--gutter)) * 0.06842, 52px) - 1.5px);
-  }
-
-  .names-date__invite {
-    font-size: calc(3.7292cqw - 1.5px);
-  }
-
-  .names-date__weekday {
-    font-size: calc(4.1954cqw - 1.5px);
-  }
-
   /* 觀禮／席設：所有文字各縮小 1.5px（這個寬度下原本的 clamp 都落在下限：28／24／16／18） */
   .details__venue-kind {
     font-size: 16.5px;
@@ -1020,31 +1048,72 @@ input:invalid.touched {
     font-size: 14.5px;
   }
 
+}
+
+/* ==========================================================================
+   電腦版以外（1279 以下：手機、平板、1024 小筆電）：Haley 2026-10-23
+   新人區一律用同一組（手機）尺寸，不再跟著畫面寬度放大；經文字縮小
+   ========================================================================== */
+@media (max-width: 1279px) {
+  /* 名字固定 22px，十字跟著 em 等比縮 */
+  .couple__names {
+    font-size: 22px;
+  }
+
+  /* 誠摯邀請日期整組最寬 340；裡面的字、數字、線條用 cqw／百分比跟著縮 */
+  .names-date {
+    width: min(340px, 100%);
+  }
+
+  .names-date__invite {
+    font-size: calc(3.7292cqw - 1.5px);
+  }
+
+  .names-date__weekday {
+    font-size: calc(4.1954cqw - 1.5px);
+  }
+
   /* 誠摯邀請日期的 2026／12／12 是 SVG 圖：高度各縮 1.5px、寬度等比（--k＝寬高比），以圖層中心為準 */
   .cmp--digit {
     margin: 0.75px calc(0.75px * var(--k));
   }
+
+  .faith__quote-tc {
+    font-size: 14px;
+    line-height: 25px;
+    letter-spacing: 1.4px;
+  }
+
+  .faith__quote-en {
+    font-size: 12.5px;
+    line-height: 25px;
+    letter-spacing: 1.25px;
+  }
 }
 
 /* ==========================================================================
-   1024 以上：婚禮資訊兩欄並排（Figma 間距 179）；
-   油畫花卉區的新人名字＋誠摯邀請日期整組縮成 Figma 的 0.75 倍（Haley 2026-10-19）
+   電腦版（1280 以上）：油畫花卉區的新人名字＋誠摯邀請日期整組縮成 Figma 的 0.75 倍（Haley 2026-10-19）
    ========================================================================== */
-@media (min-width: 1024px) {
-  /* 52 × 0.75（這個寬度下原本的 clamp 一律是上限 52px） */
+@media (min-width: 1280px) {
+  /* 52 × 0.75 */
   .couple__names {
     font-size: 39px;
   }
 
-  /* 760 × 0.75；裡面的字、數字、線條都用 cqw／百分比，跟著等比縮 */
+  /* 760 × 0.75 */
   .names-date {
     width: min(570px, 100%);
   }
+}
 
+/* ==========================================================================
+   平板以上（768+）：觀禮／席設兩欄並排（Haley 2026-10-23 平板也要兩欄；桌機 Figma 間距 179）
+   ========================================================================== */
+@media (min-width: 768px) {
   .details__venues {
     flex-direction: row;
     align-items: center;
-    gap: clamp(64px, 12.431vw, 179px);
+    gap: clamp(48px, 12.431vw, 179px);
   }
 
   .details__venue-addr {
@@ -1052,10 +1121,41 @@ input:invalid.touched {
   }
 }
 
+/* 平板：兩欄撐滿整列（拿掉置中後兩側多出的約 45px），中間距離自動分配（Haley 2026-10-23） */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .details__venues {
+    justify-content: space-between;
+    width: 100%;
+    gap: 32px;
+  }
+}
+
+/* 平板～1279（電腦版以前）：新人區比手機大一號，1024 前後字級不跳（Haley 2026-10-23） */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .couple__names {
+    font-size: 28px;
+  }
+
+  .names-date {
+    width: min(440px, 100%);
+  }
+}
+
+/* 高解析螢幕（iPad、手機）：婚禮資訊的細線與地址底線統一成 0.5px＝1 個實體像素（Haley 2026-10-23 嫌 iPad mini 上太粗） */
+@media (min-resolution: 2dppx) {
+  .details__hairline {
+    height: 0.5px;
+  }
+
+  .details__venue-addr a {
+    text-decoration-thickness: 0.5px;
+  }
+}
+
 /* ==========================================================================
    #envelope-intro — 信封開場（每次進站都出現，點一下才打開）
    疊層（後→前）：油畫花卉底圖(scene) → Save THE Date 字 → 封好的信封(closed) → 封蓋＋火漆章(lid) → 提示文字
-   信封照片用 cover 方式放大蓋滿整個視窗（比視窗再大 4%，讓信封圓角落在畫面外）；信封圖為方形、不透明（Haley 2026-10-19 換新素材）；封蓋 V 形的 clip-path 座標是照圖量出來的，換圖要重量
+   信封照片用 cover 方式放大蓋滿整個視窗（比視窗再大 4%，讓信封圓角落在畫面外）；信封圖為方形、不透明（Haley 2026-10-19 換新素材）；封蓋 V 形的 clip-path 座標是用程式沿信封圖的封蓋邊緣陰影逐點描出來的（Haley 2026-10-23：舊版 16 段直線跟實際邊緣差 1～3%，挖洞邊緣留一條綠邊），換圖要重描
    時間軸由 src/envelope.ts 切換 class：is-ready → is-pressing → is-opening → is-leaving
    ========================================================================== */
 .intro {
@@ -1201,7 +1301,7 @@ input:invalid.touched {
 
 /* 打開時：整封信封把封蓋那塊（V 形）挖掉——封蓋翻起後底下露出油畫；其餘（下半部）往下移動並淡出（Haley 2026-10-19，所有尺寸） */
 .intro.is-opening .intro__closed {
-  clip-path: polygon(0 0, 0 100%, 100% 100%, 100% 0, 96% 5%, 90% 11%, 80% 21.5%, 70% 32%, 60% 43%, 55.5% 49%, 53% 51.7%, 50% 52.6%, 47% 51.7%, 44.5% 49%, 40% 45.5%, 30% 35.5%, 20% 24.5%, 10% 12.5%, 4% 6%);
+  clip-path: polygon(0 0, 0 100%, 100% 100%, 100% 0, 100% 2.16%, 98.5% 3.06%, 96% 7.18%, 93% 10.90%, 90% 14.17%, 87% 17.26%, 84% 20.33%, 81% 23.41%, 78% 26.51%, 75% 29.63%, 72% 32.72%, 69% 35.80%, 66% 38.88%, 63% 41.97%, 60% 44.90%, 59% 46.04%, 58% 47.09%, 57% 48.14%, 56% 49.17%, 55% 50.17%, 54% 51.07%, 53% 51.79%, 52% 52.33%, 51% 52.70%, 50% 52.88%, 49% 52.89%, 48% 52.72%, 47% 52.37%, 46% 51.83%, 45% 51.08%, 44% 50.17%, 43% 49.12%, 42% 48.00%, 41% 46.93%, 40% 45.65%, 38% 43.56%, 35% 40.64%, 32% 37.48%, 29% 34.29%, 26% 31.07%, 23% 27.89%, 20% 24.76%, 17% 21.63%, 14% 18.48%, 11% 15.32%, 8% 12.15%, 5% 8.60%, 2% 4.31%, 0 2.71%);
   opacity: 0;
   transform: translateY(28%);
   transition:
@@ -1216,7 +1316,7 @@ input:invalid.touched {
 }
 
 .intro__lid-img {
-  clip-path: polygon(0 0, 100% 0, 96% 5%, 90% 11%, 80% 21.5%, 70% 32%, 60% 43%, 55.5% 49%, 53% 51.7%, 50% 52.6%, 47% 51.7%, 44.5% 49%, 40% 45.5%, 30% 35.5%, 20% 24.5%, 10% 12.5%, 4% 6%);
+  clip-path: polygon(0 0, 100% 0, 100% 2.16%, 98.5% 3.06%, 96% 7.18%, 93% 10.90%, 90% 14.17%, 87% 17.26%, 84% 20.33%, 81% 23.41%, 78% 26.51%, 75% 29.63%, 72% 32.72%, 69% 35.80%, 66% 38.88%, 63% 41.97%, 60% 44.90%, 59% 46.04%, 58% 47.09%, 57% 48.14%, 56% 49.17%, 55% 50.17%, 54% 51.07%, 53% 51.79%, 52% 52.33%, 51% 52.70%, 50% 52.88%, 49% 52.89%, 48% 52.72%, 47% 52.37%, 46% 51.83%, 45% 51.08%, 44% 50.17%, 43% 49.12%, 42% 48.00%, 41% 46.93%, 40% 45.65%, 38% 43.56%, 35% 40.64%, 32% 37.48%, 29% 34.29%, 26% 31.07%, 23% 27.89%, 20% 24.76%, 17% 21.63%, 14% 18.48%, 11% 15.32%, 8% 12.15%, 5% 8.60%, 2% 4.31%, 0 2.71%);
 }
 
 .intro.is-opening .intro__lid {
@@ -1290,7 +1390,7 @@ input:invalid.touched {
    Haley 2026-10-19 決定不論對方手機怎麼設定都要播動畫
    （手機開了「減少動態效果」或省電模式時，之前會整段被跳過） */
 @media (prefers-reduced-motion: reduce) {
-  *:not(#envelope-intro, #envelope-intro *, .hero__lettering, .hero__lettering *, .hero-date__art) {
+  *:not(#envelope-intro, #envelope-intro *, .hero__lettering, .hero__lettering *, .hero-date__art, .hero-date__shine) {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

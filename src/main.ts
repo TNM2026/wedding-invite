@@ -32,5 +32,18 @@ function setupScrollReveal(): void {
   targets.forEach((el) => observer.observe(el));
 }
 
+// 燙金日期的反光層：複製一份日期疊在原本上面，樣式與動畫見 style.css 的 .hero-date__shine
+function setupGoldShine(): void {
+  const art = document.querySelector<HTMLElement>('.hero-date__art');
+  if (!art) return;
+  const shine = art.cloneNode(true) as HTMLElement;
+  shine.className = 'hero-date__shine';
+  shine.removeAttribute('role');
+  shine.removeAttribute('aria-label');
+  shine.setAttribute('aria-hidden', 'true');
+  art.after(shine);
+}
+
+setupGoldShine();
 setupEnvelopeIntro();
 setupScrollReveal();
