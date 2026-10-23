@@ -21,6 +21,11 @@
       html.intro-open {
         background: #263529;
       }
+      /* 信封打開、換到油畫花卉 Save THE Date 那一幕時改回酒紅（跟下一個畫面同色），Safari 上下才不會露出墨綠（Haley 2026-10-23）。
+         由 src/envelope.ts 在 is-opening 時加上 intro-scene */
+      html.intro-open.intro-scene {
+        background: #47010b;
+      }
       #boot {
         display: none;
       }
@@ -78,7 +83,9 @@
     <div id="boot" role="status" aria-label="載入中"><span class="boot__ring"></span></div>
 
     <!-- Figma「燙金」效果樣式：內陰影 #110F05 60%（Haley 2026-10-23 嫌打凹感太淺，加深到 85%）（1, 2, 模糊 1.9）＋外陰影 #2A0303 20%（3, 3, 模糊 1.1）
-         CSS 的 text-shadow 做不出內陰影，所以用 SVG filter，給文字與燙金日期以 filter: url(#gold-foil) 套用 -->
+         CSS 的 text-shadow 做不出內陰影，所以用 SVG filter，給文字與燙金日期以 filter: url(#gold-foil) 套用。
+         #gold-foil-sm：手機平板（≤1023px）用的較弱版，內陰影位移 0.4/0.8、模糊 0.3、50%——Haley 2026-10-23 要保留打凹感、但手機上原本數值會糊；
+         頂部花飾／十字的 -sm.svg 與 cross-names-gold-sm.svg 用同一組數值 -->
     <svg width="0" height="0" style="position: absolute" aria-hidden="true" focusable="false">
       <filter id="gold-foil" x="-10%" y="-20%" width="130%" height="160%" color-interpolation-filters="sRGB">
         <feOffset in="SourceAlpha" dx="3" dy="3" />
@@ -88,6 +95,20 @@
         <feGaussianBlur stdDeviation="0.95" />
         <feComposite in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" />
         <feColorMatrix type="matrix" values="0 0 0 0 0.0653845 0 0 0 0 0.0607447 0 0 0 0 0.0189866 0 0 0 0.85 0" result="inner" />
+        <feMerge>
+          <feMergeNode in="drop" />
+          <feMergeNode in="SourceGraphic" />
+          <feMergeNode in="inner" />
+        </feMerge>
+      </filter>
+      <filter id="gold-foil-sm" x="-10%" y="-20%" width="130%" height="160%" color-interpolation-filters="sRGB">
+        <feOffset in="SourceAlpha" dx="3" dy="3" />
+        <feGaussianBlur stdDeviation="0.55" />
+        <feColorMatrix type="matrix" values="0 0 0 0 0.165384 0 0 0 0 0.0100185 0 0 0 0 0.0100185 0 0 0 0.2 0" result="drop" />
+        <feOffset in="SourceAlpha" dx="0.4" dy="0.8" />
+        <feGaussianBlur stdDeviation="0.3" />
+        <feComposite in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" />
+        <feColorMatrix type="matrix" values="0 0 0 0 0.0653845 0 0 0 0 0.0607447 0 0 0 0 0.0189866 0 0 0 0.5 0" result="inner" />
         <feMerge>
           <feMergeNode in="drop" />
           <feMergeNode in="SourceGraphic" />
@@ -144,7 +165,7 @@
           <!-- 新人名字：Haley 2026-10-23 從花卉區移到這裡，改燙金（同日期的 #gold-foil 效果＋反光）；上下距離 64px 跟著 .hero__main 的 gap -->
           <p class="hero-names" aria-label="蔡旻欣 與 邜航宣">
             <span>蔡 旻欣</span>
-            <img src="/art/cross-names-gold.svg" alt="" class="hero-names__cross" width="30" height="50" />
+            <picture><source media="(max-width: 1023px)" srcset="/art/cross-names-gold-sm.svg" /><img src="/art/cross-names-gold.svg" alt="" class="hero-names__cross" width="30" height="50" /></picture>
             <span>邜 航宣</span>
           </p>
 
@@ -184,7 +205,7 @@
             <span class="cmp cmp--line" style="--i: 11.88% 66.85% 88.12% 0.12%"></span>
             <span class="cmp cmp--line" style="--i: 11.88% 0.33% 88.12% 66.64%"></span>
             <span class="cmp cmp--line" style="--i: 99.31% 0.12% 0.69% 0.12%"></span>
-            <span class="cmp-text names-date__invite" style="left: 37.85%; top: 0">誠 摯 邀 請</span>
+            <span class="cmp-text names-date__invite" style="left: 49.9%; top: 0">誠 摯 邀 請</span>
             <span class="cmp" style="--i: 36.44% 64.58% 19.7% 35.42%"
               ><span class="bleed" style="--bleed: -2.52% -0.6526cqw -15.11% -0.6526cqw"><img src="/art/names-date/v3.svg" alt="" /></span></span>
             <span class="cmp" style="--i: 36.44% 46.39% 19.7% 53.61%"

@@ -59,14 +59,16 @@ export function setupEnvelopeIntro(): void {
     intro.classList.add('is-pressing');
     await wait(PRESS_MS);
     intro.classList.add('is-opening');
+    // 換到油畫花卉那一幕：頁面底色與網址列顏色改回酒紅（信封蓋著時是墨綠，見 index.html 的 theme-color 與 html.intro-scene），
+    // iPhone Safari 上下才不會露出墨綠（Haley 2026-10-23）
+    document.documentElement.classList.add('intro-scene');
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#47010b');
     await wait(SCREEN_MS);
 
     intro.classList.add('is-leaving');
     startHeroAnimation();
     app?.removeAttribute('inert');
-    document.documentElement.classList.remove('intro-open');
-    // 網址列顏色跟著換回首頁的酒紅（開場時是墨綠，見 index.html 的 theme-color）
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#47010b');
+    document.documentElement.classList.remove('intro-open', 'intro-scene');
     await wait(LEAVE_MS);
     intro.remove();
   };

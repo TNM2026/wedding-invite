@@ -219,7 +219,7 @@ a {
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* Loved to love ↔ 名字 ↔ 燙金日期：桌機 48px、平板手機 32px（見 1023 斷點）（Haley 2026-10-23，原 64）；日期下方 64px 是 .hero__faith 的 margin-top */
+  /* Loved to love ↔ 名字 ↔ 燙金日期：所有尺寸 48px（Haley 2026-10-23，原 64；平板手機的 24px 覆寫已取消）；日期下方 64px 是 .hero__faith 的 margin-top */
   gap: 48px;
   width: 100%;
   padding: 0 var(--gutter);
@@ -241,9 +241,24 @@ a {
   filter: url(#gold-foil);
 }
 
+/* 十字用 <picture> 切手機版濾鏡：picture 不佔位，讓 img 直接當 flex 子項；<source> 被全域重設成 block，會變成多一個 flex 子項、多吃一份 gap，要藏掉 */
+.hero-names picture {
+  display: contents;
+}
+
+.hero-names source {
+  display: none;
+}
+
 .hero-names__cross {
   width: auto;
   height: 0.74em;
+}
+
+/* 字距加寬、鬆散一點（Haley 2026-10-23）；字距會多墊在最後一個字後面，用負右邊距抵掉，十字兩側才等距 */
+.hero-names > span {
+  letter-spacing: 0.2em;
+  margin-right: -0.2em;
 }
 
 .hero-names:not(.gold-shine) {
@@ -582,7 +597,11 @@ a {
     0 0.282em 0.423em rgba(0, 0, 0, 0.6);
 }
 
+/* 置中在兩條細線中間（Haley 2026-10-23 回報偏左）：left 是兩線之間的中點，translate 往回拉半個字寬；
+   左邊補一份字距，跟最後一個字後面多墊的字距對稱 */
 .names-date__invite {
+  translate: -50% 0;
+  padding-left: 0.7459cqw;
   font-weight: 700;
   font-size: 3.7292cqw;
   line-height: 1.164;
@@ -736,7 +755,7 @@ a {
 .rsvp__title {
   margin: 0;
   font-family: var(--font-tc);
-  font-weight: 400;
+  font-weight: 600; /* Haley 2026-10-23：字重改 600 */
   font-size: 24px; /* Haley 2026-10-23：跟觀禮／席設的地點名字同為 24px */
   line-height: 1.8;
   letter-spacing: 0.1em;
@@ -772,7 +791,9 @@ a {
   font-weight: 300;
   font-size: 16px;
   line-height: 28.8px;
-  letter-spacing: 5px;
+  /* 字距加寬、鬆散一點（Haley 2026-10-23，原 5px）；負右邊距抵掉最後一個字後面多墊的字距，兩側細線才等距 */
+  letter-spacing: 8px;
+  margin-right: -8px;
   white-space: nowrap;
   color: var(--gold);
 }
@@ -1088,7 +1109,8 @@ input:invalid.touched {
 
   .flourish__text {
     font-size: clamp(12px, 3.5vw, 16px);
-    letter-spacing: 0.12em;
+    letter-spacing: 0.3em;
+    margin-right: -0.3em;
   }
 
   /* 地址在窄螢幕允許換行 */
@@ -1110,11 +1132,7 @@ input:invalid.touched {
    手機＋平板（1023 以下）：Haley 2026-10-19 的微調。桌機（1024 以上）維持 Figma 原樣
    ========================================================================== */
 @media (max-width: 1023px) {
-  /* 新人名字：平板與手機 24px；Loved to love ↔ 名字 ↔ 日期間距 32px（Haley 2026-10-23） */
-  .hero__main {
-    gap: 32px;
-  }
-
+  /* 新人名字：平板與手機 24px（.hero__main 的 gap 不另外覆寫，跟桌機同為 48px，Haley 2026-10-23） */
   .hero-names {
     font-size: 24px;
   }
@@ -1277,6 +1295,11 @@ input:invalid.touched {
   transition:
     opacity 0.9s var(--ease-soft),
     visibility 0s linear 0.9s;
+}
+
+/* 打開後換到油畫花卉那一幕：底色改酒紅，跟 html.intro-scene 一致（Haley 2026-10-23） */
+.has-js .intro.is-opening {
+  background-color: var(--wine-deep);
 }
 
 .intro-open,
@@ -1442,20 +1465,27 @@ input:invalid.touched {
   background: none;
   cursor: pointer;
   transform: translate(-50%, -50%);
-  /* 疊兩層陰影：一層貼近邊緣的深影＋一層往下擴散的柔影，讓火漆章像壓在信封上（Haley 2026-10-19 要加陰影） */
-  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.4)) drop-shadow(0 10px 16px rgba(0, 0, 0, 0.45));
   transition: transform 0.16s ease-out;
 }
 
+/* 陰影疊兩層：一層貼近邊緣的深影＋一層往下擴散的柔影，讓火漆章像壓在信封上（Haley 2026-10-19 要加陰影）。
+   陰影要掛在 img 本身、不能掛在按鈕上：img 有擺動動畫會變成獨立圖層，iPhone Safari 對「子層在動的父層」套 drop-shadow 時
+   會沿按鈕的方框畫陰影，按下時露出ㄇ字型黑影（Haley 2026-10-23 回報） */
 .intro__seal img {
   display: block;
   width: 100%;
   height: 100%;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.4)) drop-shadow(0 10px 16px rgba(0, 0, 0, 0.45));
 }
 
-/* 火漆章原地輕微擺動（Haley 2026-10-23）：轉 img 不轉按鈕，按鈕的 transform 留給聚焦放大與按下縮小 */
-.intro.is-ready:not(.is-pressing) .intro__seal img {
+/* 火漆章原地輕微擺動（Haley 2026-10-23）：轉 img 不轉按鈕，按鈕的 transform 留給聚焦放大與按下縮小。
+   按下後只暫停、不移除動畫，避免章瞬間彈回 0 度 */
+.intro.is-ready .intro__seal img {
   animation: seal-sway 6s ease-in-out 1s infinite;
+}
+
+.intro.is-pressing .intro__seal img {
+  animation-play-state: paused;
 }
 
 @keyframes seal-sway {
@@ -1557,5 +1587,27 @@ input:invalid.touched {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     transition-delay: 0s !important;
+  }
+}
+
+/* 手機平板（≤1023px）燙金改用較弱的打凹 #gold-foil-sm（Haley 2026-10-23：要保留打凹感，但手機上原本數值會糊；桌機照舊）。
+   放在檔案最後，才不會被前面同權重的規則蓋掉（10-23 踩過） */
+@media (max-width: 1023px) {
+  .hero__eyebrow,
+  .hero-names,
+  .hero-date__art,
+  .faith__ref {
+    filter: url(#gold-foil-sm);
+  }
+
+  .hero-date__shine,
+  .hero-names.gold-shine,
+  .faith__ref.gold-shine,
+  .intro__hint-shine {
+    filter: brightness(1.5) saturate(1.05) url(#gold-foil-sm);
+  }
+
+  .intro__hint {
+    filter: brightness(1.3) url(#gold-foil-sm);
   }
 }
