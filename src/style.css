@@ -1384,13 +1384,21 @@ input:invalid.touched {
    ========================================================================== */
 @media (min-width: 768px) {
   .details__venues {
-    flex-direction: row;
+    /* 兩欄等寬（Haley 2026-10-24 第二十三輪）：原本各欄寬由地址決定，席設比觀禮窄約 40px；
+       改 grid 兩個 1fr，fit-content 下兩欄都取較寬那欄（觀禮地址）的寬，席設靠細線拉長補齊 */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     align-items: center;
     gap: clamp(48px, 12.431vw, 179px);
   }
 
   .details__venue-addr {
     white-space: nowrap;
+  }
+
+  /* 細線可長過 129px 撐滿欄寬，兩欄標題列右緣都對齊地址右緣 */
+  .details__hairline {
+    flex-grow: 1;
   }
 }
 
@@ -1399,13 +1407,18 @@ input:invalid.touched {
    到 1023 時約 127px，跟 1024 桌機版（12.431vw）接得上 */
 @media (min-width: 744px) and (max-width: 1023px) {
   .details__venues {
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     align-items: center;
     gap: clamp(80px, 12.431vw, 128px);
   }
 
   .details__venue-addr {
     white-space: nowrap;
+  }
+
+  .details__hairline {
+    flex-grow: 1;
   }
 }
 
