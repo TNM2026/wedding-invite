@@ -642,7 +642,8 @@ a {
 .names-date__weekday {
   /* 字身框置中後墨色還偏上，往下補（原 0.095em）。第十三輪 Haley 嫌偏上：改對齊 12／12 數字主體的中心（2026 的 6 會往上凸，不算），量 390／834／1440 → 0.22em */
   translate: calc(-50% + var(--dx)) calc(-50% + 0.22em);
-  font-weight: 900;
+  /* 第二十四輪（Haley 2026-10-24）：Heavy 900 太搶眼，全尺寸降一級到 Bold 700（字級、位置不動） */
+  font-weight: 700;
   /* Haley 2026-10-24 第九輪：太大，縮 2px；第十輪再縮 2px；第十三輪墨色加大 1px（字級 +1 ÷ 0.95） */
   font-size: calc(6.149cqw - 2.947px);
   line-height: 1;
