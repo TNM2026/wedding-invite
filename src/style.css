@@ -743,6 +743,9 @@ a {
   line-height: 1.4;
   letter-spacing: 0.06em;
   white-space: nowrap;
+  /* 視覺垂直置中（Haley 2026-10-24 第二十二輪）：Cormorant Garamond 是舊式數字，9、3 往下掉，小寫字身中心本來就比細線低約 0.1em，
+     看起來偏下 → 全尺寸往上移 0.12em（36px 約 4.3px、26.5px 約 3.2px），用 translate 不動排版 */
+  translate: 0 -0.12em;
 }
 
 .details__venue-body {
@@ -784,6 +787,24 @@ a {
 .details__venue-addr a:hover,
 .details__venue-addr a:focus-visible {
   text-decoration-color: var(--gold);
+}
+
+/* 地址尾巴的「開啟外部連結」小圖示（Haley 2026-10-24 第二十二輪）：跟地址同色、細線（約同 300 字重的筆畫），
+   用 em 跟著字級縮放：0.8em → 桌機 11.2px、手機平板 11.6px（她要 14px 以內）。
+   最後一個字跟圖示包在 nowrap 裡（index.html），窄螢幕換行時圖示不會自己掉到下一行；inline-block 不吃連結底線。
+   前面的距離＝最後一個字本身墊的字距 0.2em */
+.details__ext {
+  white-space: nowrap;
+}
+
+.details__ext-icon {
+  display: inline-block;
+  width: 0.8em;
+  height: 0.8em;
+  vertical-align: -0.05em;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%23000' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 2H2.5a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V7'/%3E%3Cpath d='M7 1.5h3.5V5M10.5 1.5 5.5 6.5'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='%23000' stroke-width='1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 2H2.5a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5V7'/%3E%3Cpath d='M7 1.5h3.5V5M10.5 1.5 5.5 6.5'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 
 /* ==========================================================================
@@ -1347,8 +1368,12 @@ input:invalid.touched {
   .names-date {
     width: min(570px, 100%);
   }
+}
 
-  /* 「我們結婚了」18px（Haley 2026-10-24 第二十一輪；第二十輪 15px，原同經文出處 13px） */
+/* 「我們結婚了」電腦版 18px（Haley 2026-10-24 第二十一輪；第二十輪 15px，原同經文出處 13px）。
+   第二十二輪：原本放在 1280 斷點，1024–1279 人名、日期已是電腦版尺寸，只有這行還是 13px、到 1280 才跳 18px（她說 1080–1280 忽大忽小）
+   → 跟 hero 其他元素一樣從 1024 開始 */
+@media (min-width: 1024px) {
   .hero__married {
     font-size: 18px;
   }
