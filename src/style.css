@@ -982,6 +982,19 @@ textarea {
   transition: border-color 0.3s var(--ease-soft);
 }
 
+/* 瀏覽器自動填入（iPhone 從聯絡人帶入姓名等）會把欄位塗成螢光黃：用卡片底色的內陰影蓋掉、字色維持 ink，
+   看起來跟手打的欄位一樣（Haley 2026-10-24 回報）。背景色轉場拉超長是給 Chrome 的保險 */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px var(--cream) inset;
+  box-shadow: 0 0 0 1000px var(--cream) inset;
+  -webkit-text-fill-color: var(--ink);
+  caret-color: var(--ink);
+  transition: border-color 0.3s var(--ease-soft), background-color 99999s 0s;
+}
+
 input::placeholder {
   color: #757575;
 }

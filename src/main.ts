@@ -4,6 +4,16 @@ import './style.css';
 import './rsvp.ts';
 import { setupEnvelopeIntro } from './envelope.ts';
 
+// iPhone／iPad：輸入框字級 15px（小於 16px），一聚焦 Safari 就自動放大約 1.07 倍且不會縮回，
+// 整頁看起來往右偏、右邊被切（Haley 2026-10-24 真機回報）。只在 iOS 加 maximum-scale=1 擋掉自動放大，
+// 字級維持設計稿；iOS 會忽略這個值對手指縮放的限制，客人仍可雙指放大。Android 不會自動放大，不加（加了會擋手指縮放）
+function preventIosInputZoom(): void {
+  const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const meta = document.querySelector<HTMLMetaElement>('meta[name="viewport"]');
+  if (isIos && meta) meta.content += ', maximum-scale=1';
+}
+preventIosInputZoom();
+
 // 捲動進場：卡片/段落淡入 + 輕微上移，尊重「減少動態」偏好設定，不做 window scroll 事件監聽
 function setupScrollReveal(): void {
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
