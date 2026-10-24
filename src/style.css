@@ -32,8 +32,8 @@
   /* 色票：逐字取自 Figma（color/gold、color/linen 是 Figma 變數） */
   --wine-deep: #47010b;
   --berry: #8c3a3f;
-  --forest: #17271f; /* Haley 2026-10-24 第十二輪加深（原 #1f3329）；信封開場用 --envelope-green，不受影響 */
-  --forest-hover: #22382d; /* 跟著加深（原 #2b4538） */
+  --forest: #0f2318; /* Haley 2026-10-24 第十三輪指定（第十二輪 #17271f、原 #1f3329）；信封開場用 --envelope-green，不受影響 */
+  --forest-hover: #1a3324; /* 跟著加深（原 #2b4538） */
   --envelope-green: #263529; /* 信封開場的底色，取自信封圖邊緣；index.html 的內嵌樣式與 theme-color 寫死同一個值 */
   --cream: #f4efe6;
   --linen: #e9dcbe; /* Haley 2026-10-23 再偏黃一點（Figma 原色 #e6dccb 看起來太白） */
@@ -154,6 +154,23 @@ a {
 .names-date__divider {
   border-left: 1px solid var(--linen);
   box-shadow: 0 0.466cqw 0.536cqw rgba(0, 0, 0, 0.6);
+}
+
+/* 2026｜12｜12｜星期六 重排（Haley 2026-10-24 第十三輪：疏密跟對齊）：四組墨色之間距離相等、整列置中、三條直線各在間距正中間。
+   Figma 原位置不動，每個元素在 index.html 行內帶水平位移：--dx-d 電腦版（整組固定 570 寬），--dx-m 1279 以下（cqw＋px，數字與星期六在這裡另有 px 微調）。
+   直線同時縮短成原本 72%，中心對齊 12／12 數字主體 */
+.names-date__art > * {
+  --dx: var(--dx-d, 0px);
+}
+
+.names-date__divider,
+.names-date .cmp--digit {
+  translate: var(--dx) 0;
+}
+
+/* 誠摯邀請日期的 2026／12／12 是 SVG 圖：電腦版高度加大 1px、寬度等比（Haley 2026-10-24 第十三輪；--k＝寬高比），以圖層中心為準。1279 以下另見 media */
+.cmp--digit {
+  margin: -0.5px calc(-0.5px * var(--k));
 }
 
 /* 誠摯邀請日期的線：亞麻色，保留 Figma 的下方陰影（dy 3.54、模糊 2.04、黑 60%，以 760 寬換算成 cqw） */
@@ -516,7 +533,8 @@ a {
   width: min(1200px, calc(100% - 2 * clamp(20px, 8.333vw, 120px)));
   /* 上方「我們結婚了」到線的距離＝線到經文（Haley 2026-10-24 第十輪，原固定 64px） */
   margin-top: clamp(40px, 4.444vw, 64px);
-  margin-bottom: clamp(56px, 6.528vw, 94px);
+  /* 再加 12px：底部兩角花飾離上方經文遠一點（Haley 2026-10-24 第十三輪，原 clamp(56px, 6.528vw, 94px)） */
+  margin-bottom: calc(clamp(56px, 6.528vw, 94px) + 12px);
   padding-top: clamp(40px, 4.444vw, 64px);
   border-top: 1px solid var(--gold-30);
   text-align: center;
@@ -610,6 +628,8 @@ a {
 .names-date__art {
   position: relative;
   aspect-ratio: 760 / 128.249;
+  /* 酒紅外光暈加強（Haley 2026-10-24 第十三輪）：原本只有字與線各自的黑色下方陰影，整組再疊兩層酒紅（--wine-deep）光暈，花卉底圖上字比較跳出來 */
+  filter: drop-shadow(0 0 0.8cqw rgba(71, 1, 11, 0.9)) drop-shadow(0 0 2.4cqw rgba(71, 1, 11, 0.75));
 }
 
 .names-date__invite,
@@ -636,11 +656,11 @@ a {
    數字墨色高 5.8416cqw、中心在 54.68%；源樣明體 Heavy「星期六」墨色高 0.95em → 字級 5.8416 ÷ 0.95 ≈ 6.149cqw。
    left／top 是中心點（index.html 行內），水平中心沿用原本位置（右側細線中段） */
 .names-date__weekday {
-  /* 字身框置中後墨色還偏上約 0.095em（量 390／900／1440 三種寬度），往下補 */
-  translate: -50% calc(-50% + 0.095em);
+  /* 字身框置中後墨色還偏上，往下補（原 0.095em）。第十三輪 Haley 嫌偏上：改對齊 12／12 數字主體的中心（2026 的 6 會往上凸，不算），量 390／834／1440 → 0.22em */
+  translate: calc(-50% + var(--dx)) calc(-50% + 0.22em);
   font-weight: 900;
-  /* Haley 2026-10-24 第九輪：太大，縮 2px；第十輪再縮 2px */
-  font-size: calc(6.149cqw - 4px);
+  /* Haley 2026-10-24 第九輪：太大，縮 2px；第十輪再縮 2px；第十三輪墨色加大 1px（字級 +1 ÷ 0.95） */
+  font-size: calc(6.149cqw - 2.947px);
   line-height: 1;
 }
 
@@ -651,9 +671,20 @@ a {
   opacity: 0;
 }
 
-/* 第十二輪 Haley 要「淡入」：原本 ease-soft＋35% 就到頂，不到 1 秒衝亮像跳出來 → 改 2 秒 ease-in-out 平均淡入 */
+/* 第十三輪：改成跟燙金日期一樣由中間往四周擴散淡入（同一組遮罩與時長），只是透明度終點停在 0.8 */
+.hero__married:not(.gold-shine) {
+  -webkit-mask-image: radial-gradient(closest-side, #000 55%, transparent 100%);
+  mask-image: radial-gradient(closest-side, #000 55%, transparent 100%);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: 300% 600%;
+  mask-size: 300% 600%;
+}
+
 .hero-in .hero__married:not(.gold-shine) {
-  animation: hero-married-in 2s ease-in-out 2.2s both;
+  animation: hero-married-in 2.4s var(--ease-soft) 2.2s both;
 }
 
 .hero-in .hero__married > .gold-shine {
@@ -663,9 +694,16 @@ a {
 @keyframes hero-married-in {
   from {
     opacity: 0;
+    -webkit-mask-size: 0% 0%;
+    mask-size: 0% 0%;
+  }
+  35% {
+    opacity: 0.8;
   }
   to {
     opacity: 0.8;
+    -webkit-mask-size: 300% 600%;
+    mask-size: 300% 600%;
   }
 }
 
@@ -737,8 +775,8 @@ a {
 .details__venue-name {
   margin: 0;
   font-weight: 600;
-  /* 跟「敬備喜宴」（.rsvp__title）一樣 24px，所有尺寸（Haley 2026-10-23） */
-  font-size: 24px;
+  /* 所有尺寸 22px（Haley 2026-10-24 第十三輪；原 24px 跟「敬備喜宴」一樣） */
+  font-size: 22px;
   line-height: 1.4;
   letter-spacing: 0.2em;
 }
@@ -1246,13 +1284,18 @@ input:invalid.touched {
 
   /* 跟數字一起縮：數字墨色高少 1.5px → 字級少 1.5 ÷ 0.95 ≈ 1.579px */
   .names-date__weekday {
-    /* 再縮 2px（Haley 2026-10-24 第九輪），第十輪再縮 2px */
-    font-size: calc(6.149cqw - 5.579px);
+    /* 再縮 2px（Haley 2026-10-24 第九輪），第十輪再縮 2px；第十三輪墨色加大 1px（字級 +1 ÷ 0.95） */
+    font-size: calc(6.149cqw - 4.526px);
   }
 
   /* 誠摯邀請日期的 2026／12／12 是 SVG 圖：高度各縮 1.5px、寬度等比（--k＝寬高比），以圖層中心為準 */
+  .names-date__art > * {
+    --dx: var(--dx-m, 0px);
+  }
+
   .cmp--digit {
-    margin: 0.75px calc(0.75px * var(--k));
+    /* 第十三輪加大 1px（Haley 2026-10-24）→ 只縮 0.5px */
+    margin: 0.25px calc(0.25px * var(--k));
   }
 
   .faith__quote-tc {
@@ -1610,7 +1653,15 @@ input:invalid.touched {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5em;
+  /* 字↔葉子：第十三輪再遠一點（原 0.5em） */
+  gap: 0.9em;
+}
+
+/* 字距寬鬆一點（Haley 2026-10-24 第十三輪）；負右邊距抵掉最後一個字後面多墊的字距，兩側葉子才等距 */
+.intro__hint > span,
+.intro__hint-shine > span {
+  letter-spacing: 0.1em;
+  margin-right: -0.1em;
 }
 
 /* 葉子高 0.45em（手機 9px、桌機 12.6px），寬照原圖 43.24:16；右邊那片左右翻，同表單標題的葉飾 */
