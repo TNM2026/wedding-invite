@@ -32,8 +32,8 @@
   /* 色票：逐字取自 Figma（color/gold、color/linen 是 Figma 變數） */
   --wine-deep: #47010b;
   --berry: #8c3a3f;
-  --forest: #1f3329;
-  --forest-hover: #2b4538;
+  --forest: #17271f; /* Haley 2026-10-24 第十二輪加深（原 #1f3329）；信封開場用 --envelope-green，不受影響 */
+  --forest-hover: #22382d; /* 跟著加深（原 #2b4538） */
   --envelope-green: #263529; /* 信封開場的底色，取自信封圖邊緣；index.html 的內嵌樣式與 theme-color 寫死同一個值 */
   --cream: #f4efe6;
   --linen: #e9dcbe; /* Haley 2026-10-23 再偏黃一點（Figma 原色 #e6dccb 看起來太白） */
@@ -267,17 +267,18 @@ a {
   display: none;
 }
 
-/* 十字對齊名字的墨色中心（Haley 2026-10-24 回報沒垂直置中）：flex 置中的是字身框，中文墨色比框中心低約 0.058em（量 390／1440 兩種寬度一致） */
+/* 十字對齊名字的墨色中心（Haley 2026-10-24 回報沒垂直置中）：flex 置中的是字身框，中文墨色比框中心低約 0.058em（量 390／1440 兩種寬度一致）。
+   第十二輪她看還是偏高，再往下 → 0.12em */
 .hero-names__cross {
   width: auto;
   height: 0.74em;
-  translate: 0 0.058em;
+  translate: 0 0.12em;
 }
 
-/* 字距加寬、鬆散一點（Haley 2026-10-23）；字距會多墊在最後一個字後面，用負右邊距抵掉，十字兩側才等距 */
+/* 字距加寬、鬆散一點（Haley 2026-10-23 0.2em；第十二輪再寬鬆 → 0.3em）；字距會多墊在最後一個字後面，用負右邊距抵掉，十字兩側才等距 */
 .hero-names > span {
-  letter-spacing: 0.2em;
-  margin-right: -0.2em;
+  letter-spacing: 0.3em;
+  margin-right: -0.3em;
 }
 
 .hero-names:not(.gold-shine) {
@@ -650,8 +651,9 @@ a {
   opacity: 0;
 }
 
+/* 第十二輪 Haley 要「淡入」：原本 ease-soft＋35% 就到頂，不到 1 秒衝亮像跳出來 → 改 2 秒 ease-in-out 平均淡入 */
 .hero-in .hero__married:not(.gold-shine) {
-  animation: hero-married-in 2.4s var(--ease-soft) 2.2s both;
+  animation: hero-married-in 2s ease-in-out 2.2s both;
 }
 
 .hero-in .hero__married > .gold-shine {
@@ -662,7 +664,6 @@ a {
   from {
     opacity: 0;
   }
-  35%,
   to {
     opacity: 0.8;
   }
@@ -1575,8 +1576,9 @@ input:invalid.touched {
   }
 }
 
-/* 引導文字：You are invited.（Haley 2026-10-24 第十一輪拿掉驚嘆號改句點），跟 Save THE Date 同字形（Cormorant Garamond 斜體），手機平板 24px、桌機 32px，燙金陰影 #gold-foil＋反光（.intro__hint-shine）。
-   Haley 2026-10-23 拿掉葉飾與細線。距離畫面底部 64px（再加上 iPhone 底部安全區）；信封淡入後 0.6 秒淡入一次就停住（第十輪從 1.5 秒提早），
+/* 引導文字：You are invited.（Haley 2026-10-24 第十一輪拿掉驚嘆號改句點），跟 Save THE Date 同字形（Cormorant Garamond 斜體），手機平板 20px、桌機 28px（第十二輪各縮 2 級＝4px，原 24／32），燙金陰影 #gold-foil＋反光（.intro__hint-shine）。
+   Haley 2026-10-23 拿掉葉飾與細線；第十二輪兩側加回橄欖葉（比表單標題的 43×16 小），葉子在 <p> 裡面，燙金濾鏡、反光、呼吸都跟文字一起吃到。
+   距離畫面底部 64px（再加上 iPhone 底部安全區）；信封淡入後 0.6 秒淡入一次就停住（第十輪從 1.5 秒提早），
    點下去就收掉。animation 只掛在觸發狀態上（見 10-19 教訓） */
 .intro__hint {
   position: absolute;
@@ -1592,7 +1594,7 @@ input:invalid.touched {
   font-family: var(--font-display);
   font-style: italic;
   font-weight: 400;
-  font-size: 24px;
+  font-size: 20px;
   line-height: 1.4;
   text-align: center;
   color: var(--gold);
@@ -1602,9 +1604,29 @@ input:invalid.touched {
   opacity: 0;
 }
 
+/* 文字＋兩側葉子置中排一列；反光複製層換掉了 class，也要一起排，才會跟原本疊在一起 */
+.intro__hint,
+.intro__hint-shine {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+}
+
+/* 葉子高 0.45em（手機 9px、桌機 12.6px），寬照原圖 43.24:16；右邊那片左右翻，同表單標題的葉飾 */
+.intro__hint-leaf {
+  flex-shrink: 0;
+  width: auto;
+  height: 0.45em;
+}
+
+.intro__hint-leaf--flip {
+  transform: scaleX(-1);
+}
+
 @media (min-width: 1024px) {
   .intro__hint {
-    font-size: 32px;
+    font-size: 28px;
   }
 }
 
