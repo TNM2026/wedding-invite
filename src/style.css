@@ -517,8 +517,8 @@ a {
   width: min(1200px, calc(100% - 2 * clamp(20px, 8.333vw, 120px)));
   /* 上方「我們結婚了」到線的距離＝線到經文（Haley 2026-10-24 第十輪，原固定 64px） */
   margin-top: clamp(40px, 4.444vw, 64px);
-  /* 底部兩角花飾上方距離：第十三輪 +12px，第二十五輪全尺寸再 −24px（Haley 2026-10-24，原 clamp(56px, 6.528vw, 94px)） */
-  margin-bottom: calc(clamp(56px, 6.528vw, 94px) - 12px);
+  /* 底部兩角花飾上方距離：第十三輪 +12px，第二十五輪全尺寸再 +24px（Haley 2026-10-24，原 clamp(56px, 6.528vw, 94px)） */
+  margin-bottom: calc(clamp(56px, 6.528vw, 94px) + 36px);
   padding-top: clamp(40px, 4.444vw, 64px);
   border-top: 1px solid var(--gold-30);
   text-align: center;
@@ -1163,7 +1163,7 @@ input:invalid.touched {
 }
 
 /* 標題 ↔ 明細 20px；明細每列標籤靠左、內容靠右，列距 5px。
-   內容太長（自填的關係／飲食說明、郵寄地址）就在右欄內換行：dd 寬度隨字縮，一行時被推到最右＝靠右；換行後吃滿右欄、改從左排，避免整段靠右參差 */
+   內容太長（自填的關係／飲食說明、郵寄地址）就在右欄內換行，換行後也全部靠右（Haley 2026-10-24：標籤置左、內容全部置右） */
 .rsvp-state__details {
   display: flex;
   flex-direction: column;
@@ -1196,7 +1196,7 @@ input:invalid.touched {
   margin: 0;
   font-weight: 500;
   color: var(--bark);
-  text-align: left;
+  text-align: right;
   text-wrap: pretty;
   overflow-wrap: anywhere;
 }

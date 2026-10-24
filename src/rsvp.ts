@@ -75,7 +75,8 @@ function initRsvpForm(): void {
   const partySizeNoteInput = form.querySelector<HTMLInputElement>('#party_note');
   const dietNoteInput = form.querySelector<HTMLInputElement>('#diet_note');
 
-  const PHONE_PATTERN = /^[0-9+\-() ]{8,}$/;
+  // 括號要跳脫：瀏覽器用 v flag 編譯 pattern 屬性，字元集合裡沒跳脫的 ( ) 會讓整條規則失效、格式檢查形同沒有
+  const PHONE_PATTERN = /^[0-9+\-\(\) ]{8,}$/;
 
   // ---------- 條件邏輯 ----------
 
