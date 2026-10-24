@@ -1242,6 +1242,14 @@ input:invalid.touched {
 
 }
 
+/* 手機人名與十字一起縮 0.85 倍（Haley 2026-10-24 第十六輪）：24px → 20.4px；十字高度、兩側間距都用 em，跟著字一起縮。
+   要放在上面 ≤1023 的 24px 後面才不會被蓋掉 */
+@media (max-width: 599px) {
+  .hero-names {
+    font-size: calc(24px * 0.85);
+  }
+}
+
 /* ==========================================================================
    電腦版以外（1279 以下：手機、平板、1024 小筆電）：Haley 2026-10-23
    新人區一律用同一組（手機）尺寸，不再跟著畫面寬度放大；經文字縮小
@@ -1587,11 +1595,12 @@ input:invalid.touched {
   100% {
     transform: rotate(0deg);
   }
+  /* 擺幅 ±2.5 → ±3.5 度（Haley 2026-10-24 第十六輪：晃動感再明顯一點點） */
   25% {
-    transform: rotate(-2.5deg);
+    transform: rotate(-3.5deg);
   }
   75% {
-    transform: rotate(2.5deg);
+    transform: rotate(3.5deg);
   }
 }
 
@@ -1748,8 +1757,10 @@ input:invalid.touched {
    放在檔案最後，才不會被前面同權重的規則蓋掉（10-23 踩過） */
 @media (max-width: 1023px) {
   :root {
-    /* 字外：下緣淡亮邊＋往右下柔影。字裡面的內陰影（10-24 第八、九輪用 canvas 畫）Haley 第十輪嫌效果差，手機平板放棄不做 */
-    --foil-sm: drop-shadow(0.5px 1px 0 rgba(255, 232, 186, 0.3)) drop-shadow(1.5px 2px 1px rgba(20, 2, 2, 0.45));
+    /* 字外：下緣淡亮邊＋深色暈影。字裡面的內陰影（10-24 第八、九輪用 canvas 畫）Haley 第十輪嫌效果差，手機平板放棄不做。
+       第十六輪 Haley 要「原地凹下去」：暈影不再往右下偏（XY 0，原 1.5px 2px 1px、0.45），改成貼邊濃的一圈（1.5px）＋外面淡的一圈（3px）暈開 */
+    --foil-sm: drop-shadow(0.5px 1px 0 rgba(255, 232, 186, 0.3)) drop-shadow(0 0 1.5px rgba(20, 2, 2, 0.7))
+      drop-shadow(0 0 3px rgba(20, 2, 2, 0.35));
   }
 
   /* 日期雙線：外粗 1.5px、內細 0.5px（Haley 2026-10-24 第十一輪，原 2／1；桌機維持 4／2） */
