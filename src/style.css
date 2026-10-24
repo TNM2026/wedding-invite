@@ -517,8 +517,8 @@ a {
   width: min(1200px, calc(100% - 2 * clamp(20px, 8.333vw, 120px)));
   /* 上方「我們結婚了」到線的距離＝線到經文（Haley 2026-10-24 第十輪，原固定 64px） */
   margin-top: clamp(40px, 4.444vw, 64px);
-  /* 再加 12px：底部兩角花飾離上方經文遠一點（Haley 2026-10-24 第十三輪，原 clamp(56px, 6.528vw, 94px)） */
-  margin-bottom: calc(clamp(56px, 6.528vw, 94px) + 12px);
+  /* 底部兩角花飾上方距離：第十三輪 +12px，第二十五輪全尺寸再 −24px（Haley 2026-10-24，原 clamp(56px, 6.528vw, 94px)） */
+  margin-bottom: calc(clamp(56px, 6.528vw, 94px) - 12px);
   padding-top: clamp(40px, 4.444vw, 64px);
   border-top: 1px solid var(--gold-30);
   text-align: center;
@@ -1143,26 +1143,66 @@ input:invalid.touched {
 }
 
 /* ---------- RSVP 送出結果狀態 ---------- */
+/* 照 Figma「回覆確認卡片」（手機 2 倍稿，數值 ÷2）改排列、間距、顏色；字級維持原本 20／14px（Haley 2026-10-24） */
 .rsvp-state {
   width: 100%;
   background: var(--cream);
-  border-radius: 20px;
-  border: 1px solid var(--gold-25);
-  box-shadow: 0 24px 60px -32px rgba(0, 0, 0, 0.45);
-  padding: clamp(32px, 7vw, 56px);
+  border-radius: 22.5px;
+  border: 1px solid #e7dcc1;
+  box-shadow: 0 20px 27px rgba(33, 27, 32, 0.21);
+  padding: 44px 32px 40px;
   text-align: center;
   color: var(--ink);
 }
 
 .rsvp-state__title {
-  margin: 0 0 12px;
+  margin: 0;
   font-family: var(--font-tc);
   font-size: 20px;
   color: var(--wine-deep);
 }
 
+/* 標題 ↔ 明細 20px；明細每列標籤靠左、內容靠右，列距 5px。
+   內容太長（自填的關係／飲食說明、郵寄地址）就在右欄內換行：dd 寬度隨字縮，一行時被推到最右＝靠右；換行後吃滿右欄、改從左排，避免整段靠右參差 */
+.rsvp-state__details {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 20px 0 0;
+  font-size: 14px;
+  line-height: 26px;
+}
+
+.rsvp-state__details:empty {
+  display: none;
+}
+
+.rsvp-state__row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.rsvp-state__row dt {
+  flex-shrink: 0;
+  font-weight: 300;
+  color: rgba(110, 79, 53, 0.7); /* --bark 70% */
+  white-space: nowrap;
+}
+
+.rsvp-state__row dd {
+  min-width: 0;
+  margin: 0;
+  font-weight: 500;
+  color: var(--bark);
+  text-align: left;
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+}
+
 .rsvp-state__summary {
-  margin: 0 0 4px;
+  margin: 12px 0 4px;
   font-size: 14px;
   line-height: 1.9;
   color: var(--bark);

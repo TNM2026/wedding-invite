@@ -196,29 +196,48 @@ function initRsvpForm(): void {
     return payload;
   }
 
-  function buildSummary(payload: Record<string, string>): string {
+  // 回覆明細：每列 [標籤, 內容]，畫面上標籤靠左、內容靠右（Haley 2026-10-24 照 Figma 回覆確認卡片改排列）
+  function buildSummary(payload: Record<string, string>): [string, string][] {
     const attendType = payload.attend_type as AttendType;
     const relationLabel = RELATION_LABEL[payload.relation] ?? payload.relation;
     const relationExtra = payload.relation === 'other' && payload.relation_other ? `（${payload.relation_other}）` : '';
-    const lines: string[] = [
-      `身份：${relationLabel}${relationExtra}`,
-      `出席類型：${ATTEND_TYPE_LABEL[attendType] ?? payload.attend_type}`,
+    const rows: [string, string][] = [
+      ['身份', `${relationLabel}${relationExtra}`],
+      ['出席類型', ATTEND_TYPE_LABEL[attendType] ?? payload.attend_type],
     ];
 
     if (BANQUET_ATTEND_TYPES.has(attendType)) {
-      const partySize = payload.party_size === '4+' ? '4 人以上' : `${payload.party_size} 人`;
-      lines.push(`出席人數：${partySize}`);
+      const partySize = payload.party_size === '4+' ? '4\u00a0人以上' : `${payload.party_size}\u00a0人`;
+      rows.push(['出席人數', partySize]);
       const dietLabel = DIET_LABEL[payload.diet] ?? payload.diet;
-      lines.push(`飲食：${dietLabel}${payload.diet === 'other' && payload.diet_note ? `（${payload.diet_note}）` : ''}`);
+      rows.push(['飲食', `${dietLabel}${payload.diet === 'other' && payload.diet_note ? `（${payload.diet_note}）` : ''}`]);
       if (payload.kids_need === 'yes') {
-        lines.push(`兒童椅：${payload.kids_chair || 0} 張・兒童餐具：${payload.kids_tableware || 0} 份`);
+        // 數字跟單位之間用不換行空格，窄螢幕才不會斷成「10 張・10」／「份」
+        rows.push(['兒童椅・餐具', `${payload.kids_chair || 0}\u00a0張・${payload.kids_tableware || 0}\u00a0份`]);
       }
     }
 
     const cake = payload.cake as Cake;
-    lines.push(`喜餅：${CAKE_LABEL[cake] ?? payload.cake}${cake === 'mail' ? `（將郵寄至：${payload.address}）` : ''}`);
+    rows.push(['喜餅', `${CAKE_LABEL[cake] ?? payload.cake}${cake === 'mail' ? `（將郵寄至：${payload.address}）` : ''}`]);
 
-    return lines.join('\n');
+    return rows;
+  }
+
+  // 用 textContent 填字，訪客自己輸入的關係／飲食說明／地址不會被當成 HTML
+  function renderSummary(rows: [string, string][]): void {
+    if (!successSummaryEl) return;
+    successSummaryEl.replaceChildren(
+      ...rows.map(([label, value]) => {
+        const row = document.createElement('div');
+        row.className = 'rsvp-state__row';
+        const dt = document.createElement('dt');
+        dt.textContent = label;
+        const dd = document.createElement('dd');
+        dd.textContent = value;
+        row.append(dt, dd);
+        return row;
+      }),
+    );
   }
 
   async function submitPayload(payload: Record<string, string>): Promise<void> {
@@ -264,7 +283,7 @@ function initRsvpForm(): void {
     const honeypot = form.querySelector<HTMLInputElement>('#website');
     if (honeypot?.value) {
       showState('success');
-      if (successSummaryEl) successSummaryEl.textContent = '';
+      renderSummary([]);
       return;
     }
 
@@ -277,7 +296,7 @@ function initRsvpForm(): void {
     setBusy(true);
     submitPayload(payload)
       .then(() => {
-        if (successSummaryEl) successSummaryEl.textContent = buildSummary(payload);
+        renderSummary(buildSummary(payload));
         showState('success');
       })
       .catch((err) => {
