@@ -33,7 +33,6 @@
   --wine-deep: #47010b;
   --berry: #8c3a3f;
   --forest: #0f2318; /* Haley 2026-10-24 第十三輪指定（第十二輪 #17271f、原 #1f3329）；信封開場用 --envelope-green，不受影響 */
-  --forest-hover: #1a3324; /* 跟著加深（原 #2b4538） */
   --envelope-green: #263529; /* 信封開場的底色，取自信封圖邊緣；index.html 的內嵌樣式與 theme-color 寫死同一個值 */
   --cream: #f4efe6;
   --linen: #e9dcbe; /* Haley 2026-10-23 再偏黃一點（Figma 原色 #e6dccb 看起來太白） */
@@ -284,12 +283,13 @@ a {
   display: none;
 }
 
-/* 十字對齊名字的墨色中心（Haley 2026-10-24 回報沒垂直置中）：flex 置中的是字身框，中文墨色比框中心低約 0.058em（量 390／1440 兩種寬度一致）。
-   第十二輪她看還是偏高，再往下 → 0.12em */
+/* 十字跟名字同高（Haley 2026-10-24 第十四輪，原 0.74em 比字矮）：名字墨色高量到 0.93em（24px 22.25、32px 29.75），
+   十字墨色只佔圖高的 43/50 → 圖高 0.93 × 50/43 ≈ 1.08em。左右距離照舊靠 .hero-names 的 gap，十字變寬不影響（圖右側留白只有 1.5%）。
+   垂直：圖片框置中後，墨色在框上方 43/50，再往下推到上下緣對齊名字墨色 → 0.13em */
 .hero-names__cross {
   width: auto;
-  height: 0.74em;
-  translate: 0 0.12em;
+  height: 1.08em;
+  translate: 0 0.13em;
 }
 
 /* 字距加寬、鬆散一點（Haley 2026-10-23 0.2em；第十二輪再寬鬆 → 0.3em）；字距會多墊在最後一個字後面，用負右邊距抵掉，十字兩側才等距 */
@@ -431,10 +431,11 @@ a {
 }
 
 /* 日期擴散進場（1.3s 起、2.4s）結束後才開始；由上往下依序掃：頂部列 → 名字 → 日期 → 經文出處。
-   Haley 2026-10-23 第三輪：發光之間再緊湊 → 每 7 秒→5 秒一次，掃過速度不變（約 3.15 秒，見 keyframes 63%） */
+   Haley 2026-10-23 第三輪：每 7 秒→5 秒一次、掃過約 3.15 秒。
+   2026-10-24 第十四輪：速度與頻率都慢一點、不規則 → 24 秒一大輪，裡面三次掃光的速度、間隔各不同（見 keyframes） */
 .hero-in .gold-shine {
   opacity: 1;
-  animation: gold-shine 5s ease-in-out 4s infinite;
+  animation: gold-shine 24s ease-in-out 4s infinite;
 }
 
 .hero-in .hero-names > .gold-shine {
@@ -452,16 +453,37 @@ a {
 /* 信封上的引導文字：信封淡入、引導文字出現後就開始反光（不用等 .hero-in） */
 .intro.is-ready .intro__hint-shine {
   opacity: 1;
-  animation: gold-shine 5s ease-in-out 1.8s infinite;
+  animation: gold-shine 24s ease-in-out 1.8s infinite;
 }
 
+/* 24 秒內掃三次：0–4.0s（4.0 秒）→ 停 3.6 秒 → 7.6–11.0s（3.4 秒）→ 停 5.2 秒 → 16.2–20.8s（4.6 秒）→ 停 3.2 秒再回到第一次。
+   平均約 8 秒一次（原 5 秒）、每次掃 3.4–4.6 秒（原 3.15 秒）。
+   遮罩在 0% 與 100% 時亮帶都在元素外，掃完從 0% 跳回 100% 看不出來 */
 @keyframes gold-shine {
-  from {
+  0% {
     -webkit-mask-position: 100% 0;
     mask-position: 100% 0;
   }
-  63%,
-  to {
+  16.667%,
+  31.65% {
+    -webkit-mask-position: 0% 0;
+    mask-position: 0% 0;
+  }
+  31.667% {
+    -webkit-mask-position: 100% 0;
+    mask-position: 100% 0;
+  }
+  45.833%,
+  67.48% {
+    -webkit-mask-position: 0% 0;
+    mask-position: 0% 0;
+  }
+  67.5% {
+    -webkit-mask-position: 100% 0;
+    mask-position: 100% 0;
+  }
+  86.667%,
+  100% {
     -webkit-mask-position: 0% 0;
     mask-position: 0% 0;
   }
@@ -784,7 +806,8 @@ a {
 .details__venue-addr {
   margin: 0;
   font-weight: 300;
-  font-size: clamp(16px, 1.389vw, 20px);
+  /* 電腦版小 2px（Haley 2026-10-24 第十四輪，原 clamp(16px, 1.389vw, 20px)：1440 寬 20 → 18px）；手機平板 14.5px 見 1023 斷點 */
+  font-size: calc(clamp(16px, 1.389vw, 20px) - 2px);
   line-height: 1.5;
   letter-spacing: 0.2em;
 }
@@ -1081,6 +1104,7 @@ input:invalid.touched {
   width: 100%;
   margin-top: 9px;
   padding: 16px 24px 15px;
+  /* 跟婚禮資訊、頁尾同一個墨綠；滑鼠移上去也不換色（Haley 2026-10-24 第十四輪，原 hover 變亮成 #1a3324，手機點過後也會停在那個顏色），按下回饋只留 .btn:active 的縮小 */
   background: var(--forest);
   color: var(--cream);
   font-size: 15px;
@@ -1089,10 +1113,6 @@ input:invalid.touched {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.btn--primary:hover {
-  background: var(--forest-hover);
 }
 
 .btn--primary:disabled {
@@ -1669,10 +1689,14 @@ input:invalid.touched {
   flex-shrink: 0;
   width: auto;
   height: 0.45em;
+  /* 向內傾斜、像向上舒展（Haley 2026-10-24 第十四輪，「一點點」）：外側葉尖往上、靠字那端往下，各轉 6 度。
+     用獨立的 rotate 屬性，不會跟右片的 scaleX(-1) 互相蓋掉 */
+  rotate: 6deg;
 }
 
 .intro__hint-leaf--flip {
   transform: scaleX(-1);
+  rotate: -6deg;
 }
 
 @media (min-width: 1024px) {
