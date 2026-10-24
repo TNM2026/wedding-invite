@@ -75,7 +75,7 @@ function setupGoldShine(): void {
 
   // 什麼時候開始掃：hero 的等進場動畫（日期擴散約 3.7 秒）跑完，信封字等信封淡入
   const heroShines = [...document.querySelectorAll<HTMLElement>('.gold-shine:not(.intro__hint-shine)')];
-  whenClass(document.documentElement, 'hero-in', () => heroShines.forEach((el) => runShine(el, rand(4000, 9000))));
+  whenClass(document.documentElement, 'hero-in', () => heroShines.forEach((el) => runShine(el, rand(2000, 5000))));
   const intro = document.querySelector<HTMLElement>('#envelope-intro');
   const hintShine = document.querySelector<HTMLElement>('.intro__hint-shine');
   if (intro && hintShine) whenClass(intro, 'is-ready', () => runShine(hintShine, 1800));
@@ -84,7 +84,7 @@ function setupGoldShine(): void {
 const rand = (min: number, max: number) => min + Math.random() * (max - min);
 
 // 反光掃光（Haley 2026-10-24 第十五輪）：每個燙金元素各自隨機，不要由上往下依序掃（太機械化）。
-// 一次約 8 秒（6–10 秒隨機），其中掃過 3.4–4.6 秒、其餘停著；遮罩從 100% 移到 0%，兩端亮帶都在元素外，跳回去看不出來。
+// 一次約 5 秒（4.6–6 秒隨機；第二十一輪 Haley 要頻率調高，原 6–10 秒），其中掃過 3.4–4.6 秒、其餘停著；遮罩從 100% 移到 0%，兩端亮帶都在元素外，跳回去看不出來。
 // 信封開完會整個移除，元素不在頁面上就停
 function runShine(el: HTMLElement, delay: number): void {
   window.setTimeout(() => {
@@ -96,7 +96,7 @@ function runShine(el: HTMLElement, delay: number): void {
       ],
       { duration: rand(3400, 4600), easing: 'ease-in-out' }
     );
-    runShine(el, rand(6000, 10000));
+    runShine(el, rand(4600, 6000));
   }, delay);
 }
 

@@ -444,7 +444,7 @@ a {
 
 /* 反光什麼時候出現：hero 的在 .hero-in 之後、信封字在 .intro.is-ready 之後才看得到（不透明度 1）。
    掃光時機由 src/main.ts 的 runShine() 用 JS 排：Haley 2026-10-24 第十五輪要各自隨機、不要由上往下依序掃（機械化），
-   平均約 8 秒一次（6–10 秒隨機），每次掃 3.4–4.6 秒隨機。
+   平均約 5 秒一次（4.6–6 秒隨機；第二十一輪調高頻率，原 6–10 秒），每次掃 3.4–4.6 秒隨機。
    歷史：10-23 每 7→5 秒、依序掃；第十四輪改 24 秒一大輪三次，她嫌太慢 */
 .hero-in .gold-shine,
 .intro.is-ready .intro__hint-shine {
@@ -764,8 +764,9 @@ a {
 .details__venue-addr {
   margin: 0;
   font-weight: 300;
-  /* 電腦版小 2px（Haley 2026-10-24 第十四輪，原 clamp(16px, 1.389vw, 20px)：1440 寬 20 → 18px）；手機平板 14.5px 見 1023 斷點 */
-  font-size: calc(clamp(16px, 1.389vw, 20px) - 2px);
+  /* 電腦版固定 14px（Haley 2026-10-24 第二十一輪：1224 以後隨寬度變大，再小 2 級＝4px，1440 寬 18 → 14px、不再隨寬度變；
+     第十四輪原為 calc(clamp(16px, 1.389vw, 20px) - 2px)）；手機平板 14.5px 見 1023 斷點 */
+  font-size: 14px;
   line-height: 1.5;
   letter-spacing: 0.2em;
 }
@@ -1347,9 +1348,9 @@ input:invalid.touched {
     width: min(570px, 100%);
   }
 
-  /* 「我們結婚了」比經文出處大 2px（Haley 2026-10-24 第二十輪，原同為 13px） */
+  /* 「我們結婚了」18px（Haley 2026-10-24 第二十一輪；第二十輪 15px，原同經文出處 13px） */
   .hero__married {
-    font-size: 15px;
+    font-size: 18px;
   }
 }
 
@@ -1714,7 +1715,7 @@ input:invalid.touched {
 
 /* 淡入一次就停住、維持 100%。
    第二十輪拿掉 7 秒一輪的「呼吸」（透明度波 75% ↔ 100%）：遮罩在濾鏡之後才套，連燙金陰影一起變淡，Haley 看到凹痕忽明忽滅。
-   凹痕要恆在、只有發光隨機 → 發光只留反光層（.intro__hint-shine，src/main.ts 隨機約 8 秒掃一次） */
+   凹痕要恆在、只有發光隨機 → 發光只留反光層（.intro__hint-shine，src/main.ts 隨機約 5 秒掃一次） */
 .intro.is-ready:not(.is-pressing) .intro__hint {
   animation: intro-hint-in 1.2s ease 0.6s both;
 }
