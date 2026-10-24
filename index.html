@@ -84,7 +84,7 @@
 
     <!-- Figma「燙金」效果樣式：內陰影 #110F05 60%（Haley 2026-10-23 嫌打凹感太淺，加深到 85%）（1, 2, 模糊 1.9）＋外陰影 #2A0303 20%（3, 3, 模糊 1.1）
          CSS 的 text-shadow 做不出內陰影，所以用 SVG filter，給文字與燙金日期以 filter: url(#gold-foil) 套用。
-         只用在桌機。手機平板（≤1023px）2026-10-24 起改用 CSS drop-shadow（style.css 檔尾 --foil-sm）：iPhone 上 SVG 濾鏡會糊、反光也動不起來 -->
+         只用在桌機。手機平板（≤1023px）2026-10-24 第十一輪起改顯示用這個濾鏡預拍的 3 倍圖（scripts/bake-foil.mjs → public/art/foil/，style.css 檔尾）：iPhone 上 SVG 濾鏡會糊 -->
     <svg width="0" height="0" style="position: absolute" aria-hidden="true" focusable="false">
       <filter id="gold-foil" x="-10%" y="-20%" width="130%" height="160%" color-interpolation-filters="sRGB">
         <feOffset in="SourceAlpha" dx="3" dy="3" />
@@ -120,8 +120,8 @@
           </button>
         </div>
       </div>
-      <!-- 引導文字：You are invited!，跟 Save THE Date 同字形，燙金陰影＋反光，距離底部 64px -->
-      <p class="intro__hint" aria-hidden="true">You are invited !</p>
+      <!-- 引導文字：You are invited.，跟 Save THE Date 同字形，燙金陰影＋反光，距離底部 64px -->
+      <p class="intro__hint" aria-hidden="true"><span class="intro__hint-text" data-foil="hint">You are invited.</span></p>
     </div>
 
     <div id="app">
@@ -129,15 +129,15 @@
       <section id="hero" aria-label="Save the date">
         <!-- 頂部裝飾：1023 以下縮 0.5 倍，換成 -sm 版：燙金外陰影＋打凹改用向量畫、不用 SVG 濾鏡（濾鏡在 iPhone 上縮小顯示會糊，Haley 2026-10-24） -->
         <div class="hero__topbar">
-          <span class="hero__ornament">
+          <span class="hero__ornament" data-foil="orn-l">
             <span class="bleed" style="--bleed: -1.36% -4.76% -16.25% 0"><picture><source media="(max-width: 1023px)" srcset="/art/ornament-left-sm.svg" /><img src="/art/ornament-left.svg" alt="" /></picture></span>
           </span>
-          <span class="hero__eyebrow">DECEMBER · 2026</span>
-          <span class="hero__topcross">
+          <span class="hero__eyebrow" data-foil="dec">DECEMBER · 2026</span>
+          <span class="hero__topcross" data-foil="cross">
             <span class="bleed" style="--bleed: -1.56% -11.82% -14.37% 0"><picture><source media="(max-width: 1023px)" srcset="/art/cross-top-sm.svg" /><img src="/art/cross-top.svg" alt="" /></picture></span>
           </span>
-          <span class="hero__eyebrow">SAVE THE DATE</span>
-          <span class="hero__ornament">
+          <span class="hero__eyebrow" data-foil="std">SAVE THE DATE</span>
+          <span class="hero__ornament" data-foil="orn-r">
             <span class="bleed" style="--bleed: -1.36% -4.77% -16.25% 0"><picture><source media="(max-width: 1023px)" srcset="/art/ornament-right-sm.svg" /><img src="/art/ornament-right.svg" alt="" /></picture></span>
           </span>
         </div>
@@ -148,7 +148,7 @@
           </div>
 
           <!-- 新人名字：Haley 2026-10-23 從花卉區移到這裡，改燙金（同日期的 #gold-foil 效果＋反光）；上下距離 64px 跟著 .hero__main 的 gap -->
-          <p class="hero-names" aria-label="蔡旻欣 與 邜航宣">
+          <p class="hero-names" data-foil="names" aria-label="蔡旻欣 與 邜航宣">
             <span>蔡 旻欣</span>
             <picture><source media="(max-width: 1023px)" srcset="/art/cross-names-gold-sm.svg" /><img src="/art/cross-names-gold.svg" alt="" class="hero-names__cross" width="30" height="50" /></picture>
             <span>邜 航宣</span>
@@ -156,7 +156,7 @@
 
           <!-- 燙金日期：Figma「資產 1 1」，各元素照 Figma 百分比定位，整組等比縮放 -->
           <div class="hero-date">
-            <div class="hero-date__art" role="img" aria-label="2026 年 12 月 12 日 星期六">
+            <div class="hero-date__art" data-foil="date" role="img" aria-label="2026 年 12 月 12 日 星期六">
               <span class="cmp-text hero-date__text" style="left: 27.24%; top: 36.81%">DEC</span>
               <span class="cmp-text hero-date__text" style="left: 64.48%; top: 36.81%">2026</span>
               <span class="cmp-text hero-date__text hero-date__text--sat" style="left: 47.06%; top: 21.84%">SAT</span>
@@ -171,7 +171,7 @@
             </div>
           </div>
           <!-- Haley 2026-10-24 新增；第九輪改成跟經文出處「約翰一書」一樣的燙金與大小，跟日期距離同名字↔日期（.hero__main 的 gap）；第十輪拿掉驚嘆號 -->
-          <p class="faith__ref hero__married">我們結婚了</p>
+          <p class="faith__ref hero__married" data-foil="married">我們結婚了</p>
         </div>
 
         <!-- 信仰祝福經文 -->
@@ -180,7 +180,7 @@
             <span class="faith__quote-tc">「我們愛，因為神先愛我們。」</span>
             <span class="faith__quote-en">“We love because he first loved us.”</span>
           </p>
-          <p class="faith__ref">約翰一書 4:19</p>
+          <p class="faith__ref" data-foil="john">約翰一書 4:19</p>
         </div>
       </section>
 
