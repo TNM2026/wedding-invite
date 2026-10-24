@@ -1248,6 +1248,21 @@ input:invalid.touched {
   .hero-names {
     font-size: calc(24px * 0.85);
   }
+
+  /* Loved to love 放大 1.75 倍（Haley 2026-10-24 第十七輪，確認過會超出螢幕、左右被 #hero 的 overflow: hidden 裁掉）：
+     .hero__main 是置中的 flex 欄，太寬的子項會往左右平均溢出，所以仍然置中 */
+  .hero__lettering {
+    width: calc(min(888.913px, 100%) * 1.75);
+  }
+
+  /* 上下距離各多 8px：頂部列 ↔ Loved to love 48 → 56、Loved to love ↔ 人名 48 → 56（.hero__main gap 48 再加 8） */
+  .hero__topbar {
+    margin-bottom: 56px;
+  }
+
+  .hero__lettering {
+    margin-bottom: 8px;
+  }
 }
 
 /* ==========================================================================
