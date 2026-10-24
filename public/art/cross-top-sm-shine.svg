@@ -1,0 +1,15 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="24.6" height="37.1" viewBox="0 0 24.6 37.1" fill="none" xmlns="http://www.w3.org/2000/svg">
+<!-- vector-emboss -->
+<!-- 手機平板用：燙金效果用向量畫（不用 SVG 濾鏡），iPhone Safari 上縮小顯示才不會糊（Haley 2026-10-24）。
+     外陰影＝整個形狀往右下錯開 3/3、#2A0303 20%；打凹＝形狀左上緣內側 1/2 的深色邊 #110F05 70% -->
+<defs>
+<mask id="inner" maskUnits="userSpaceOnUse" x="-10" y="-10" width="44.6" height="57.1">
+<path d="M11 1.5V10.5M11 10.5V31.5M11 10.5H3M11 10.5H19" stroke-width="3" stroke-linecap="round" stroke="#fff"/>
+<g transform="translate(1 2)">
+<path d="M11 1.5V10.5M11 10.5V31.5M11 10.5H3M11 10.5H19" stroke-width="3" stroke-linecap="round" stroke="#000"/>
+</g>
+</mask>
+</defs>
+<path d="M11 1.5V10.5M11 10.5V31.5M11 10.5H3M11 10.5H19" stroke-width="3" stroke-linecap="round" stroke="#CEAD6E"/>
+<rect x="-10" y="-10" width="44.6" height="57.1" fill="#110F05" opacity="0.7" mask="url(#inner)"/>
+</svg>

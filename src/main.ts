@@ -44,8 +44,16 @@ function makeShine(source: Element): HTMLElement {
   shine.style.position = 'absolute';
   shine.style.inset = '0';
   shine.style.margin = '0';
+  // 花飾、十字的 SVG 自己內建外陰影：複製層換成沒有外陰影的 -shine 版，反光掃過時陰影才不會疊兩層、一下濃一下淡（Haley 2026-10-24 第二十輪）
+  shine.querySelectorAll('img, source').forEach((el) => {
+    const attr = el instanceof HTMLImageElement ? 'src' : 'srcset';
+    const url = el.getAttribute(attr);
+    if (url && SHADOWED_ART.test(url)) el.setAttribute(attr, url.replace(/\.svg$/, '-shine.svg'));
+  });
   return shine;
 }
+
+const SHADOWED_ART = /\/art\/(cross-top|cross-names-gold|ornament-(left|right)(-flip)?)(-sm)?\.svg$/;
 
 function setupGoldShine(): void {
   // 日期：換掉 class（不要 .hero-date__art 的進場遮罩），放在旁邊，由 .hero-date 當定位框

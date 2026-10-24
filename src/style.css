@@ -412,16 +412,28 @@ a {
   mask-position: 100% 0;
 }
 
-/* 日期、經文出處的反光層本身也套燙金濾鏡（先調亮再壓內陰影），掃過時打凹感不會消失（Haley 2026-10-23）。
-   頂部列不用：裡面的花飾、十字、英文字各自已帶效果，整層再套會疊兩次。
-   燙金濾鏡會把反光壓暗到幾乎看不見（Haley 回報「動畫不見了」），這兩層的亮度與遮罩另外拉高補回來 */
+/* 反光層只負責「發光」，凹痕（外暈影）一律只由原元素畫一次、固定不動（Haley 2026-10-24 第二十輪：凹痕要恆在，只有發光隨機）。
+   以前反光層自己也套整組燙金濾鏡，遮罩掃到哪、哪裡的暈影就多疊一層 → 看起來一下濃一下淡。
+   名字、經文出處、信封字的反光層在原元素「裡面」，原元素的濾鏡本來就會連反光層一起壓內陰影，反光層自己只調亮；
+   日期的反光層在原元素「旁邊」，自己補內陰影（#gold-foil-inner，只有內陰影、沒有外暈影），掃過時打凹感才不會消失（Haley 2026-10-23）。
+   頂部列：裡面的花飾、十字換成沒有外陰影的 -shine 版（src/main.ts），英文字見下方。
+   燙金濾鏡會把反光壓暗到幾乎看不見（Haley 回報「動畫不見了」），這幾層的亮度與遮罩另外拉高補回來 */
 .hero-date__shine,
 .hero-names.gold-shine,
 .faith__ref.gold-shine,
 .intro__hint-shine {
-  filter: brightness(1.5) saturate(1.05) url(#gold-foil);
+  filter: brightness(1.5) saturate(1.05);
   -webkit-mask-image: linear-gradient(110deg, transparent 38%, rgba(0, 0, 0, 0.7) 50%, transparent 62%);
   mask-image: linear-gradient(110deg, transparent 38%, rgba(0, 0, 0, 0.7) 50%, transparent 62%);
+}
+
+.hero-date__shine {
+  filter: brightness(1.5) saturate(1.05) url(#gold-foil-inner);
+}
+
+/* 頂部列反光層裡的英文字：只留內陰影，外暈影交給原本那份 */
+.gold-shine .hero__eyebrow {
+  filter: url(#gold-foil-inner);
 }
 
 /* 疊在元素自己裡面的反光層（頂部列、經文出處），原元素當定位框 */
@@ -1160,10 +1172,10 @@ input:invalid.touched {
     gap: 10px;
   }
 
-  /* 人名 ↔ 雙線日期 ↔ 我們結婚了 聚攏一點（Haley 2026-10-24 第十五輪）：.hero__main 的 gap 48px 各少 8px → 40px；Loved to love ↔ 人名維持 48px */
+  /* 人名 ↔ 雙線日期 ↔ 我們結婚了 聚攏一點（Haley 2026-10-24 第十五輪）：.hero__main 的 gap 48px 各少 8px → 40px；第二十輪再各少 4px → 36px；Loved to love ↔ 人名維持 48px */
   .hero-date,
   .hero__married {
-    margin-top: -8px;
+    margin-top: -12px;
   }
 
   .flourish__line {
@@ -1301,6 +1313,13 @@ input:invalid.touched {
     margin: 0.25px calc(0.25px * var(--k));
   }
 
+  /* 2026／12／12 在手機上糊（Haley 2026-10-24 第二十輪）：Figma 匯出的 SVG 裡有 SVG 濾鏡畫的兩層下方陰影，iPhone 縮小顯示會糊（同 10-24 燙金教訓）。
+     index.html 用 <picture> 在 1279 以下換成不含濾鏡的 v*-sm.svg（尺寸、viewBox 不變，.bleed 照舊對齊），陰影改用 CSS drop-shadow 照原值畫：
+     dy 4／模糊 4（stdDeviation 2）、dy 8／模糊 12（stdDeviation 6），黑 60%，以 760 寬換算成 cqw */
+  .cmp--digit img {
+    filter: drop-shadow(0 0.526cqw 0.526cqw rgba(0, 0, 0, 0.6)) drop-shadow(0 1.053cqw 1.579cqw rgba(0, 0, 0, 0.6));
+  }
+
   .faith__quote-tc {
     font-size: 14px;
     line-height: 25px;
@@ -1326,6 +1345,11 @@ input:invalid.touched {
   /* 760 × 0.75 */
   .names-date {
     width: min(570px, 100%);
+  }
+
+  /* 「我們結婚了」比經文出處大 2px（Haley 2026-10-24 第二十輪，原同為 13px） */
+  .hero__married {
+    font-size: 15px;
   }
 }
 
@@ -1688,29 +1712,11 @@ input:invalid.touched {
   }
 }
 
-/* 淡入後開始「呼吸」（Haley 2026-10-24；第九輪嫌快，4.5 → 7 秒一輪）：一道亮的透明度波由左往右慢慢掃過，其餘維持 75%（Haley 2026-10-24 第十一輪嫌不明顯，原 45%），循環不停。
-   做法＝漸層遮罩（75% → 100% → 75%）放大 3 倍、位置由右往左移，視覺上亮處由左往右走；遮罩也一併蓋住反光層 */
+/* 淡入一次就停住、維持 100%。
+   第二十輪拿掉 7 秒一輪的「呼吸」（透明度波 75% ↔ 100%）：遮罩在濾鏡之後才套，連燙金陰影一起變淡，Haley 看到凹痕忽明忽滅。
+   凹痕要恆在、只有發光隨機 → 發光只留反光層（.intro__hint-shine，src/main.ts 隨機約 8 秒掃一次） */
 .intro.is-ready:not(.is-pressing) .intro__hint {
-  -webkit-mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.75) 20%, #000 50%, rgba(0, 0, 0, 0.75) 80%);
-  mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.75) 20%, #000 50%, rgba(0, 0, 0, 0.75) 80%);
-  -webkit-mask-size: 300% 100%;
-  mask-size: 300% 100%;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  animation:
-    intro-hint-in 1.2s ease 0.6s both,
-    intro-hint-breathe 7s ease-in-out 0.6s infinite;
-}
-
-@keyframes intro-hint-breathe {
-  from {
-    -webkit-mask-position: 100% 0;
-    mask-position: 100% 0;
-  }
-  to {
-    -webkit-mask-position: 0% 0;
-    mask-position: 0% 0;
-  }
+  animation: intro-hint-in 1.2s ease 0.6s both;
 }
 
 @keyframes intro-hint-in {
@@ -1805,6 +1811,11 @@ input:invalid.touched {
     filter: var(--foil-sm);
   }
 
+  /* 頂部列反光層裡的英文字：手機平板沒有內陰影，外暈影交給原本那份 */
+  .gold-shine .hero__eyebrow {
+    filter: none;
+  }
+
   /* 反光在手機上不明顯（Haley 2026-10-24）：亮度與遮罩最亮處都拉高（桌機照舊）。頂部列原本 1.3／0.5，其餘 1.5／0.7 */
   .gold-shine {
     filter: brightness(1.9) saturate(1.1);
@@ -1812,11 +1823,12 @@ input:invalid.touched {
     mask-image: linear-gradient(110deg, transparent 36%, rgba(0, 0, 0, 0.95) 50%, transparent 64%);
   }
 
+  /* 第二十輪：反光層不再自己帶 --foil-sm，暈影只由原元素畫一次（原因見前面桌機的反光層規則） */
   .hero-date__shine,
   .hero-names.gold-shine,
   .faith__ref.gold-shine,
   .intro__hint-shine {
-    filter: brightness(2.1) saturate(1.1) var(--foil-sm);
+    filter: brightness(2.1) saturate(1.1);
     -webkit-mask-image: linear-gradient(110deg, transparent 36%, #000 50%, transparent 64%);
     mask-image: linear-gradient(110deg, transparent 36%, #000 50%, transparent 64%);
   }
