@@ -1249,10 +1249,13 @@ input:invalid.touched {
     font-size: calc(24px * 0.85);
   }
 
-  /* Loved to love 放大 1.75 倍（Haley 2026-10-24 第十七輪，確認過會超出螢幕、左右被 #hero 的 overflow: hidden 裁掉）：
-     .hero__main 是置中的 flex 欄，太寬的子項會往左右平均溢出，所以仍然置中 */
+  /* Loved to love 放大（Haley 2026-10-24 第十八輪）：主字（L 的主體到 to 的 o）完整、置中在內容寬度裡，
+     左上捲筆與右邊兩條尾巴超出螢幕可以被 #hero 的 overflow: hidden 裁掉。第十七輪的 1.75 倍她嫌太大、主字被切。
+     主字在 SVG（908.569 寬，左邊外擴 0.74%）的 x 118–718 → 600 單位 ≈ 圖層寬 888.913 的 67.5%；
+     放大 1.45 倍＝主字約佔內容寬 98%。主字中心在 SVG x 418，比圖層中心偏左 3.7% → 往右推回來 */
   .hero__lettering {
-    width: calc(min(888.913px, 100%) * 1.75);
+    width: calc(min(888.913px, 100%) * 1.45);
+    translate: 3.7% 0;
   }
 
   /* 上下距離各多 8px：頂部列 ↔ Loved to love 48 → 56、Loved to love ↔ 人名 48 → 56（.hero__main gap 48 再加 8） */
@@ -1773,9 +1776,10 @@ input:invalid.touched {
 @media (max-width: 1023px) {
   :root {
     /* 字外：下緣淡亮邊＋深色暈影。字裡面的內陰影（10-24 第八、九輪用 canvas 畫）Haley 第十輪嫌效果差，手機平板放棄不做。
-       第十六輪 Haley 要「原地凹下去」：暈影不再往右下偏（XY 0，原 1.5px 2px 1px、0.45），改成貼邊濃的一圈（1.5px）＋外面淡的一圈（3px）暈開 */
-    --foil-sm: drop-shadow(0.5px 1px 0 rgba(255, 232, 186, 0.3)) drop-shadow(0 0 1.5px rgba(20, 2, 2, 0.7))
-      drop-shadow(0 0 3px rgba(20, 2, 2, 0.35));
+       第十六輪 Haley 要「原地凹下去」：暈影不再往右下偏（XY 0，原 1.5px 2px 1px、0.45），改成貼邊濃的一圈（1.5px）＋外面淡的一圈（3px）暈開。
+       第十八輪再濃一點：暈開範圍不變，透明度 0.7／0.35 → 0.9／0.55 */
+    --foil-sm: drop-shadow(0.5px 1px 0 rgba(255, 232, 186, 0.3)) drop-shadow(0 0 1.5px rgba(20, 2, 2, 0.9))
+      drop-shadow(0 0 3px rgba(20, 2, 2, 0.55));
   }
 
   /* 日期雙線：外粗 1.5px、內細 0.5px（Haley 2026-10-24 第十一輪，原 2／1；桌機維持 4／2） */
