@@ -56,7 +56,7 @@ function setupGoldShine(): void {
     date.after(shine);
   }
   // 頂部列（花飾、十字、英文字）、新人名字與經文出處：保留原 class 讓版面一致，放在元素自己裡面
-  document.querySelectorAll('.hero__topbar, .hero-names, .faith__ref').forEach((el) => el.append(makeShine(el)));
+  document.querySelectorAll('.hero__topbar, .hero__bottombar, .hero-names, .faith__ref').forEach((el) => el.append(makeShine(el)));
   // 信封上的引導文字：換掉 class（不要 .intro__hint 的定位與淡入），放在自己裡面
   const hint = document.querySelector('.intro__hint');
   if (hint) {
