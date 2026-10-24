@@ -64,6 +64,43 @@ function setupGoldShine(): void {
     shine.className = 'gold-shine intro__hint-shine';
     hint.append(shine);
   }
+
+  // 什麼時候開始掃：hero 的等進場動畫（日期擴散約 3.7 秒）跑完，信封字等信封淡入
+  const heroShines = [...document.querySelectorAll<HTMLElement>('.gold-shine:not(.intro__hint-shine)')];
+  whenClass(document.documentElement, 'hero-in', () => heroShines.forEach((el) => runShine(el, rand(4000, 9000))));
+  const intro = document.querySelector<HTMLElement>('#envelope-intro');
+  const hintShine = document.querySelector<HTMLElement>('.intro__hint-shine');
+  if (intro && hintShine) whenClass(intro, 'is-ready', () => runShine(hintShine, 1800));
+}
+
+const rand = (min: number, max: number) => min + Math.random() * (max - min);
+
+// 反光掃光（Haley 2026-10-24 第十五輪）：每個燙金元素各自隨機，不要由上往下依序掃（太機械化）。
+// 一次約 8 秒（6–10 秒隨機），其中掃過 3.4–4.6 秒、其餘停著；遮罩從 100% 移到 0%，兩端亮帶都在元素外，跳回去看不出來。
+// 信封開完會整個移除，元素不在頁面上就停
+function runShine(el: HTMLElement, delay: number): void {
+  window.setTimeout(() => {
+    if (!el.isConnected) return;
+    el.animate(
+      [
+        { maskPosition: '100% 0', webkitMaskPosition: '100% 0' },
+        { maskPosition: '0% 0', webkitMaskPosition: '0% 0' },
+      ],
+      { duration: rand(3400, 4600), easing: 'ease-in-out' }
+    );
+    runShine(el, rand(6000, 10000));
+  }, delay);
+}
+
+// 元素一有某個 class 就執行一次（已經有就馬上執行）
+function whenClass(target: HTMLElement, name: string, fn: () => void): void {
+  if (target.classList.contains(name)) return fn();
+  const observer = new MutationObserver(() => {
+    if (!target.classList.contains(name)) return;
+    observer.disconnect();
+    fn();
+  });
+  observer.observe(target, { attributes: true, attributeFilter: ['class'] });
 }
 
 setupGoldShine();

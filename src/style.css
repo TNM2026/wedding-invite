@@ -430,63 +430,13 @@ a {
   position: relative;
 }
 
-/* 日期擴散進場（1.3s 起、2.4s）結束後才開始；由上往下依序掃：頂部列 → 名字 → 日期 → 經文出處。
-   Haley 2026-10-23 第三輪：每 7 秒→5 秒一次、掃過約 3.15 秒。
-   2026-10-24 第十四輪：速度與頻率都慢一點、不規則 → 24 秒一大輪，裡面三次掃光的速度、間隔各不同（見 keyframes） */
-.hero-in .gold-shine {
-  opacity: 1;
-  animation: gold-shine 24s ease-in-out 4s infinite;
-}
-
-.hero-in .hero-names > .gold-shine {
-  animation-delay: 4.3s;
-}
-
-.hero-in .hero-date__shine {
-  animation-delay: 4.6s;
-}
-
-.hero-in .faith__ref > .gold-shine {
-  animation-delay: 4.9s;
-}
-
-/* 信封上的引導文字：信封淡入、引導文字出現後就開始反光（不用等 .hero-in） */
+/* 反光什麼時候出現：hero 的在 .hero-in 之後、信封字在 .intro.is-ready 之後才看得到（不透明度 1）。
+   掃光時機由 src/main.ts 的 runShine() 用 JS 排：Haley 2026-10-24 第十五輪要各自隨機、不要由上往下依序掃（機械化），
+   平均約 8 秒一次（6–10 秒隨機），每次掃 3.4–4.6 秒隨機。
+   歷史：10-23 每 7→5 秒、依序掃；第十四輪改 24 秒一大輪三次，她嫌太慢 */
+.hero-in .gold-shine,
 .intro.is-ready .intro__hint-shine {
   opacity: 1;
-  animation: gold-shine 24s ease-in-out 1.8s infinite;
-}
-
-/* 24 秒內掃三次：0–4.0s（4.0 秒）→ 停 3.6 秒 → 7.6–11.0s（3.4 秒）→ 停 5.2 秒 → 16.2–20.8s（4.6 秒）→ 停 3.2 秒再回到第一次。
-   平均約 8 秒一次（原 5 秒）、每次掃 3.4–4.6 秒（原 3.15 秒）。
-   遮罩在 0% 與 100% 時亮帶都在元素外，掃完從 0% 跳回 100% 看不出來 */
-@keyframes gold-shine {
-  0% {
-    -webkit-mask-position: 100% 0;
-    mask-position: 100% 0;
-  }
-  16.667%,
-  31.65% {
-    -webkit-mask-position: 0% 0;
-    mask-position: 0% 0;
-  }
-  31.667% {
-    -webkit-mask-position: 100% 0;
-    mask-position: 100% 0;
-  }
-  45.833%,
-  67.48% {
-    -webkit-mask-position: 0% 0;
-    mask-position: 0% 0;
-  }
-  67.5% {
-    -webkit-mask-position: 100% 0;
-    mask-position: 100% 0;
-  }
-  86.667%,
-  100% {
-    -webkit-mask-position: 0% 0;
-    mask-position: 0% 0;
-  }
 }
 
 .hero-date__art {
@@ -709,10 +659,6 @@ a {
   animation: hero-married-in 2.4s var(--ease-soft) 2.2s both;
 }
 
-.hero-in .hero__married > .gold-shine {
-  animation-delay: 4.75s;
-}
-
 @keyframes hero-married-in {
   from {
     opacity: 0;
@@ -887,14 +833,17 @@ a {
   margin: 0;
 }
 
+/* 葉飾（表單標題、頁尾）：跟信封 You are invited. 的葉子同大小、同樣往內傾 6 度（Haley 2026-10-24 第十五輪，原 43.24×16、水平）。
+   桌機高 12.6px（＝信封葉子 28px × 0.45），≤1023 高 9px 見 1023 斷點；寬照原圖比例 */
 .flourish__leaf {
   flex-shrink: 0;
-  width: 43.24px;
-  height: 16px;
+  width: auto;
+  height: 12.6px;
+  transform: rotate(6deg);
 }
 
 .flourish__leaf--flip {
-  transform: scaleX(-1);
+  transform: scaleX(-1) rotate(6deg);
 }
 
 .flourish__line {
@@ -1211,14 +1160,16 @@ input:invalid.touched {
     gap: 10px;
   }
 
+  /* 人名 ↔ 雙線日期 ↔ 我們結婚了 聚攏一點（Haley 2026-10-24 第十五輪）：.hero__main 的 gap 48px 各少 8px → 40px；Loved to love ↔ 人名維持 48px */
+  .hero-date,
+  .hero__married {
+    margin-top: -8px;
+  }
+
   .flourish__line {
     display: none;
   }
 
-  .flourish__leaf {
-    width: clamp(26px, 7vw, 43.24px);
-    height: auto;
-  }
 
   .flourish__text {
     font-size: clamp(12px, 3.5vw, 16px);
@@ -1248,6 +1199,11 @@ input:invalid.touched {
   /* 新人名字：平板與手機 24px（.hero__main 的 gap 不另外覆寫，跟桌機同為 48px，Haley 2026-10-23） */
   .hero-names {
     font-size: 24px;
+  }
+
+  /* 葉飾跟信封葉子同大小（信封 20px × 0.45） */
+  .flourish__leaf {
+    height: 9px;
   }
 
   /* 頂部裝飾（兩側花飾＋十字）縮小 0.5 倍 */
@@ -1690,13 +1646,12 @@ input:invalid.touched {
   width: auto;
   height: 0.45em;
   /* 向內傾斜、像向上舒展（Haley 2026-10-24 第十四輪，「一點點」）：外側葉尖往上、靠字那端往下，各轉 6 度。
-     用獨立的 rotate 屬性，不會跟右片的 scaleX(-1) 互相蓋掉 */
-  rotate: 6deg;
+     第十五輪：右片不對稱（之前用獨立 rotate 屬性，跟 scaleX(-1) 的疊加順序不對）→ 右片改成先轉再翻，正好是左片的鏡像 */
+  transform: rotate(6deg);
 }
 
 .intro__hint-leaf--flip {
-  transform: scaleX(-1);
-  rotate: -6deg;
+  transform: scaleX(-1) rotate(6deg);
 }
 
 @media (min-width: 1024px) {
