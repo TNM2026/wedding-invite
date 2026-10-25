@@ -745,6 +745,8 @@ a {
   min-width: 40px;
   height: 1px;
   background: var(--gold);
+  /* 第三十二輪（Haley 2026-10-25）：觀禮／席設細線透明度 70% */
+  opacity: 0.7;
 }
 
 .details__venue-time {
