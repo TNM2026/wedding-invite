@@ -1441,6 +1441,11 @@ input:invalid.touched {
   .hero__married {
     font-size: 18px;
   }
+
+  /* 第三十一輪（Haley 2026-10-25）：約翰一書電腦版 9px 太小，1024 起改 12px；1023 以下維持 9px */
+  .faith__ref:not(.hero__married) {
+    font-size: 12px;
+  }
 }
 
 /* ==========================================================================
