@@ -73,8 +73,9 @@ function setupGoldShine(): void {
     shine.className = 'gold-shine hero-date__shine';
     date.after(shine);
   }
-  // 頂部列（花飾、十字、英文字）、新人名字與經文出處：保留原 class 讓版面一致，放在元素自己裡面
-  document.querySelectorAll('.hero__topbar, .hero__bottombar, .hero-names, .faith__ref').forEach((el) => el.append(makeShine(el)));
+  // 頂部列（花飾、十字、英文字）、新人名字與我們結婚了：保留原 class 讓版面一致，放在元素自己裡面
+  // 經文出處「約翰一書」不加反光，只留燙金打凹（Haley 2026-10-25 第二十九輪）；我們結婚了也掛 .faith__ref，所以只挑 .hero__married
+  document.querySelectorAll('.hero__topbar, .hero__bottombar, .hero-names, .faith__ref.hero__married').forEach((el) => el.append(makeShine(el)));
   // 信封上的引導文字：換掉 class（不要 .intro__hint 的定位與淡入），放在自己裡面
   const hint = document.querySelector('.intro__hint');
   if (hint) {
