@@ -1328,8 +1328,9 @@ input:invalid.touched {
     font-size: 16.5px;
   }
 
+  /* 時間加大 2 級（Haley 2026-10-25 第三十三輪）：26.5 → 30.5px */
   .details__venue-time {
-    font-size: 26.5px;
+    font-size: 30.5px;
   }
 
   .details__venue-addr {
