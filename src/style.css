@@ -552,13 +552,19 @@ a {
 .faith__ref {
   margin: 0;
   font-weight: 700;
-  font-size: 13px;
+  /* 第三十輪（Haley 2026-10-25）：約翰一書縮 2 級 13 → 9px（一級＝2px，同第十二輪）；行高不動，跟經文的距離不變。我們結婚了另外維持 13px，見下方 */
+  font-size: 9px;
   line-height: 23.4px;
   letter-spacing: 4px;
   color: var(--gold);
   filter: url(#gold-foil);
   /* 第二十八輪 80% → 70%、第二十九輪再降到 60%（Haley 2026-10-25：不用那麼明顯；我們結婚了維持 0.8） */
   opacity: 0.6;
+}
+
+/* 我們結婚了也掛 .faith__ref，字級維持原本的 13px（電腦版 18px 見 min-width: 1024px 那段） */
+.hero__married {
+  font-size: 13px;
 }
 
 /* ==========================================================================
