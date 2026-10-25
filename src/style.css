@@ -529,7 +529,7 @@ a {
   flex-direction: column;
   align-items: center;
   margin: 0;
-  /* 經文 40%（Haley 2026-10-23，原 80%；出處 80%，見 .faith__ref） */
+  /* 經文 40%（Haley 2026-10-23，原 80%；出處 70%，見 .faith__ref） */
   color: rgba(244, 239, 230, 0.4);
 }
 
@@ -557,7 +557,8 @@ a {
   letter-spacing: 4px;
   color: var(--gold);
   filter: url(#gold-foil);
-  opacity: 0.8;
+  /* 第二十八輪：80% → 70%（Haley 2026-10-25：不用那麼明顯；我們結婚了維持 0.8） */
+  opacity: 0.7;
 }
 
 /* ==========================================================================
